@@ -67,10 +67,12 @@ class Game {
   }
 
   doShips(spf) {
+    let dir;
     while (this.ships.length < 20) {
+      dir = Math.random() * Math.PI * 2.0;
       this.ships.push(new Ship(
-        Math.random() * 100 - 50,
-        Math.random() * 100 - 50,
+        Math.cos(dir) * 200.0,
+        Math.sin(dir) * 200.0,
         this.physics,
         this.ships,
         false,
@@ -186,6 +188,19 @@ class Game {
       -position.x,
       -position.y,
     );
+
+    // Draw "home" indicator
+    this.c.beginPath();
+    this.c.arc(0, 0, 0.5, 0, Math.PI * 2.0);
+    const distance = planck.Vec2.lengthOf(position);
+    if (distance > 10) {
+      const vector = {
+        x: -position.x / distance,
+        y: -position.y / distance
+      };
+      this.c.arc(position.x + vector.x * 10, position.y + vector.y * 10, 0.3, 0, Math.PI * 2.0);
+    }
+    this.c.fill();
   }
 
   createWorld() {
@@ -195,7 +210,7 @@ class Game {
 
   addShips() {
     this.ships.push(new Ship(
-      50,
+      190,
       20,
       this.physics,
       this.ships,
