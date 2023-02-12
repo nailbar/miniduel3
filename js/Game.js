@@ -1,5 +1,6 @@
 class Game {
   constructor(canvasId) {
+    this.scale = 10;
     this.canvas = document.getElementById(canvasId);
     this.c = canvas.getContext('2d');
     this.addBullet = this.addBullet.bind(this);
@@ -180,7 +181,7 @@ class Game {
       this.canvas.width * 0.5,
       this.canvas.height * 0.5,
     );
-    this.c.scale(10, -10);
+    this.c.scale(this.scale, -this.scale);
     this.c.translate(
       -position.x,
       -position.y,
@@ -262,19 +263,19 @@ class Game {
 
   initParallax() {
     this.stars = [];
-    const width = 100;
-    const height = 100;
+    const width = canvas.width / this.scale;
+    const height = canvas.height / this.scale;
     for (let i = 0; i < 100; i++) {
       this.stars.push({
-        x: Math.random() * width - width * 0.5,
-        y: Math.random() * height - height * 0.5,
+        x: Math.random() * width,
+        y: Math.random() * height,
       });
     }
   }
 
   drawParallax() {
-    const width = 100;
-    const height = 100;
+    const width = canvas.width / this.scale;
+    const height = canvas.height / this.scale;
     const pos = this.ships[0].getPosition();
     this.stars.forEach((star) => {
       if (star.x < pos.x - width * 0.5) {
@@ -284,10 +285,10 @@ class Game {
         star.x -= width;
       }
       if (star.y < pos.y - height * 0.5) {
-        star.y += width;
+        star.y += height;
       }
       if (star.y > pos.y + height * 0.5) {
-        star.y -= width;
+        star.y -= height;
       }
       this.c.fillRect(star.x, star.y, 0.2, 0.2);
     });
