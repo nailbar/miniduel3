@@ -31,14 +31,16 @@ class Bullet {
     const position = this.body.getWorldPoint(planck.Vec2(0, 0));
     const particles = Math.floor(Math.random() * 10) + 3;
 
-    for (let i = 0; i < particles; i++) {
-      this.addParticle(
-        position.x,
-        position.y,
-        Math.random() * 50 - 25,
-        Math.random() * 50 - 25,
-        'spark'
-      );
+    if (this.age < 3.0) {
+      for (let i = 0; i < particles; i++) {
+        this.addParticle(
+          position.x,
+          position.y,
+          Math.random() * 50 - 25,
+          Math.random() * 50 - 25,
+          'spark'
+        );
+      }
     }
 
     this.physics.destroyBody(this.body);
