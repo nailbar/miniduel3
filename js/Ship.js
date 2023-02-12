@@ -99,6 +99,12 @@ class Ship {
       c.restore();
     });
 
+    const position = this.body.getWorldPoint(planck.Vec2(0, 0));
+    this.body.applyForceToCenter(planck.Vec2(
+      position.x * -0.1,
+      position.y * -0.1
+    ));
+
     if (rebuild) {
       this.updateBody();
     }
