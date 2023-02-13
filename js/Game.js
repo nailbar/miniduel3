@@ -3,10 +3,14 @@ class Game {
     this.scale = 10;
     this.canvas = document.getElementById(canvasId);
     this.c = canvas.getContext('2d');
+
     this.addBullet = this.addBullet.bind(this);
     this.addDebris = this.addDebris.bind(this);
     this.addParticle = this.addParticle.bind(this);
     this.handleHits = this.handleHits.bind(this);
+
+    this.follow = false;
+
     this.fixCanvasSize();
     this.createWorld();
     this.initKeyListener();
@@ -17,41 +21,8 @@ class Game {
   gameLoop(timestamp) {
     const spf = this.getSecondsPerFrame(timestamp);
     this.physics.step(spf, 8, 3);
-    this.controlShip();
     this.actAndDraw(spf);
     requestAnimationFrame(this.gameLoop);
-  }
-
-  controlShip() {
-    this.ships[0].ai = false;
-    this.ships[0].initSignals();
-    if (this.keys.w || this.keys.ArrowUp) {
-      this.ships[0].signals.forward = 1.0;
-    }
-    if (this.keys.a || this.keys.ArrowLeft) {
-      this.ships[0].signals.turnLeft = 1.0;
-    }
-    if (this.keys.s || this.keys.ArrowDown) {
-      this.ships[0].signals.reverse = 1.0;
-    }
-    if (this.keys.d || this.keys.ArrowRight) {
-      this.ships[0].signals.turnRight = 1.0;
-    }
-    if (this.keys.q) {
-      this.ships[0].signals.strafeLeft = 1.0;
-    }
-    if (this.keys.e) {
-      this.ships[0].signals.strafeRight = 1.0;
-    }
-    if (this.keys[' ']) {
-      this.ships[0].signals.slide = 1.0;
-    }
-    if (this.keys.Shift) {
-      this.ships[0].signals.shootPrimary = 1.0;
-    }
-    if (this.keys.Enter) {
-      this.ships[0].signals.shootSecondary = 1.0;
-    }
   }
 
   actAndDraw(spf) {
@@ -72,6 +43,7 @@ class Game {
       { team: 1, ships: 0, waiting: this.teams[1] },
       { team: 2, ships: 0, waiting: this.teams[2] },
     ];
+    this.hasPlayer = false;
 
     this.ships.forEach((ship, i) => {
       if (ship.parts.length == 0) {
@@ -81,6 +53,10 @@ class Game {
       }
 
       teamShips[ship.team].ships++;
+
+      if (ship.ai.category == 'player') {
+        this.hasPlayer = true;
+      }
 
       const position = ship.getPosition();
       this.c.save();
@@ -186,8 +162,18 @@ class Game {
     this.keys[e.key] = false;
   }
 
+  getCameraPos() {
+    if (this.follow) {
+      if (!this.follow.destroy) {
+        return this.follow.getPosition();
+      }
+      this.follow = false;
+    }
+    return { x: 0, y: 0 };
+  }
+
   fixCamera() {
-    const position = this.ships[0].getPosition();
+    const position = this.getCameraPos();
     this.c.translate(
       this.canvas.width * 0.5,
       this.canvas.height * 0.5,
@@ -215,21 +201,25 @@ class Game {
 
   createWorld() {
     this.emptyWorld();
-    this.addShips();
+    this.populateWorld();
   }
 
-  addShips() {
-    this.teams[0] = 20;
-    this.teams[1] = 20;
-    this.teams[2] = 20;
+  populateWorld() {
+    this.teams[0] = 2;
+    this.teams[1] = 2;
+    this.teams[2] = 2;
     this.addTeamShip(Math.floor(Math.random() * 3));
   }
 
   addTeamShip(team) {
     if (this.teams[team] > 0) {
       const position = this.getTeamStartPos(team);
-      this.ships.push(new Ship(position.x, position.y, team, false, this));
+      this.ships.push(new Ship(position.x, position.y, team, this.hasPlayer ? false : true, this));
       this.teams[team]--;
+      if (!this.hasPlayer) {
+        this.follow = this.ships[this.ships.length - 1];
+      }
+      this.hasPlayer = true;
     }
   }
 
@@ -315,7 +305,7 @@ class Game {
   drawParallax() {
     const width = canvas.width / this.scale;
     const height = canvas.height / this.scale;
-    const pos = this.ships[0].getPosition();
+    const pos = this.getCameraPos();
     this.setColors('star');
     this.stars.forEach((star) => {
       if (star.x < pos.x - width * 0.5) {

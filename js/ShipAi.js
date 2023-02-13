@@ -1,10 +1,12 @@
 class ShipAi {
-  constructor(ship, ships) {
+  constructor(ship, game) {
+    this.category = 'ai';
     this.ship = ship;
-    this.ships = ships;
+    this.game = game;
     this.mode = 'attack' //'goto';
     this.target = { x: 0, y: 0 };
     this.targetId = -1;
+    this.timeout = 20.0;
 
     this.personality = {
       maxRotation: 2.0 + Math.random() * 3.0,
@@ -14,7 +16,7 @@ class ShipAi {
     };
   }
 
-  ponder() {
+  ponder(spf) {
     this.ship.initSignals();
     const Vec2 = planck.Vec2;
 
@@ -23,7 +25,7 @@ class ShipAi {
 
     let invalidTarget = false;
     const velocity = this.ship.body.getLinearVelocity();
-    if (this.updateMode(distance)) {
+    if (this.updateMode(distance, spf)) {
       invalidTarget = true;
       this.target = Vec2(0, 0).sub(Vec2(velocity.x, velocity.y).mul(distance * 0.1));
     }
@@ -73,21 +75,17 @@ class ShipAi {
     }
   }
 
-  updateMode(distance) {
+  updateMode(distance, spf) {
+    this.timeout -= spf;
     switch (this.mode) {
       case 'goto':
-        if (distance < 15.0) {
-          this.mode = 'follow';
-          this.targetId = Math.floor(Math.random() * this.ships.length);
-          return true;
-        }
         break;
 
       case 'follow':
-        if (this.checkTarget()) {
+        if (this.checkTarget(distance)) {
           return true;
         }
-        this.target = this.ships[this.targetId].getPosition();
+        this.target = this.game.ships[this.targetId].getPosition();
         break;
 
       case 'attack':
@@ -95,14 +93,20 @@ class ShipAi {
           this.mode = 'evade';
           return true;
         }
-        if (this.checkTarget()) {
+        if (this.checkTarget(distance)) {
           return true;
+        }
+        if (this.timeout <= 0) {
+          this.timeout = Math.random() * 200.0;
+          if (this.findNearestTarget(distance)) {
+            return true;
+          }
         }
         this.interceptTarget();
         break;
 
       case 'evade':
-        if (this.checkTarget()) {
+        if (this.checkTarget(distance)) {
           return true;
         }
         if (this.findNearestTarget(distance)) {
@@ -116,18 +120,18 @@ class ShipAi {
     return false;
   }
 
-  checkTarget() {
-    if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId].team == this.ship.team) {
-      this.targetId = Math.floor(Math.random() * this.ships.length);
+  checkTarget(distance) {
+    if (distance > 100, this.targetId < 0 || this.targetId >= this.game.ships.length || this.game.ships[this.targetId].team == this.ship.team) {
+      this.targetId = Math.floor(Math.random() * this.game.ships.length);
       return true;
     }
     return false;
   }
 
   findNearestTarget(distance) {
-    const targetId = Math.floor(Math.random() * this.ships.length);
-    if (this.ships[targetId].team == this.ship.team) {
-      return true;
+    const targetId = Math.floor(Math.random() * this.game.ships.length);
+    if (this.game.ships[targetId].team == this.ship.team) {
+      return false;
     }
     const newDistance = this.distanceToShip(targetId)
     if (newDistance < distance) {
@@ -139,7 +143,7 @@ class ShipAi {
 
   distanceToShip(targetId) {
     return planck.Vec2.lengthOf(
-      this.ships[targetId].body.getLocalPoint(
+      this.game.ships[targetId].body.getLocalPoint(
         this.ship.getPosition()
       )
     );
@@ -147,7 +151,7 @@ class ShipAi {
 
   evadeTarget() {
     const myPos = this.ship.getPosition();
-    const relative = myPos.sub(this.ships[this.targetId].getPosition());
+    const relative = myPos.sub(this.game.ships[this.targetId].getPosition());
     this.target = myPos.add(relative);
     this.ship.signals.forward = 1.0; // Always full speed ahead
   }
@@ -155,8 +159,8 @@ class ShipAi {
   interceptTarget() {
     const Vec2 = planck.Vec2;
     const p = this.personality;
-    const targetPos = this.ships[this.targetId].getPosition();
-    const targetVel = this.ships[this.targetId].body.getLinearVelocity();
+    const targetPos = this.game.ships[this.targetId].getPosition();
+    const targetVel = this.game.ships[this.targetId].body.getLinearVelocity();
     const ownVel = this.ship.body.getLinearVelocity();
     const distance = planck.Vec2.lengthOf(this.ship.body.getLocalPoint(targetPos));
     this.target = targetPos.add(Vec2(

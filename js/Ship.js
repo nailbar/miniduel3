@@ -14,8 +14,10 @@ class Ship {
     this.buildShip();
 
     this.initSignals();
-    if (!playerControlled) {
-      this.ai = new ShipAi(this, game.ships);
+    if (playerControlled) {
+      this.ai = new Player(this, game);
+    } else {
+      this.ai = new ShipAi(this, game);
     }
   }
   
@@ -28,11 +30,11 @@ class Ship {
     const right = velocity.x * vector.y + velocity.y * -vector.x;
     
     // Prevent going too fast
-    if (Math.abs(forward) > 100) {
+    if (Math.abs(forward) > 70.0) {
       signals.forward = 0;
       signals.reverse = 0;
     }
-    if (Math.abs(right) > 100) {
+    if (Math.abs(right) > 70.0) {
       signals.strafeLeft = 0;
       signals.strafeRight = 0;
     }
@@ -77,14 +79,13 @@ class Ship {
   }
 
   actAndDraw(c, spf) {
-    if (this.ai) {
-      this.ai.ponder();
+    this.ai.ponder(spf);
 
-      // Debug target leading
-      // const pos = this.body.getLocalPoint(planck.Vec2(this.ai.target.x, this.ai.target.y));
-      // c.fillRect(pos.x - 0.3, pos.y - 0.3, 0.6, 0.6);
-      // c.fillRect(0, -0.01, 100, 0.02);
-    }
+    // Debug target leading
+    // const pos = this.body.getLocalPoint(planck.Vec2(this.ai.target.x, this.ai.target.y));
+    // c.fillRect(pos.x - 0.3, pos.y - 0.3, 0.6, 0.6);
+    // c.fillRect(0, -0.01, 100, 0.02);
+  
     let signals = this.autoStop();
     let rebuild = false;
     let hasLifeSupport = false;
@@ -188,6 +189,7 @@ class Ship {
   }
 
   unCreate() {
+    this.destroy = true;
     this.game.physics.destroyBody(this.body);
   }
 
@@ -214,6 +216,12 @@ class Ship {
           ]],
           [ 1.2, -0.1, 'right thruster', 0, [
             { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 0.6, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -0.6, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
           ]],
           [ 1.5, 0, 'blaster', 0, [
             { signal: 'shootPrimary', strength: 1 },
