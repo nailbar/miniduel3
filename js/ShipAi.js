@@ -80,26 +80,74 @@ class ShipAi {
           return true;
         }
         break;
+
       case 'follow':
-        if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId] == this.ship) {
-          this.targetId = Math.floor(Math.random() * this.ships.length);
+        if (this.checkTarget()) {
           return true;
         }
         this.target = this.ships[this.targetId].getPosition();
         break;
+
       case 'attack':
-        if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId] == this.ship) {
-          this.targetId = Math.floor(Math.random() * this.ships.length);
+        if (!this.ship.canShoot) {
+          this.mode = 'evade';
+          return true;
+        }
+        if (this.checkTarget()) {
           return true;
         }
         this.interceptTarget();
         break;
+
       case 'evade':
+        if (this.checkTarget()) {
+          return true;
+        }
+        if (this.findNearestTarget(distance)) {
+          return true;
+        }
+        this.evadeTarget();
         break;
       default:
         return true;
     }
     return false;
+  }
+
+  checkTarget() {
+    if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId] == this.ship) {
+      this.targetId = Math.floor(Math.random() * this.ships.length);
+      return true;
+    }
+    return false;
+  }
+
+  findNearestTarget(distance) {
+    const targetId = Math.floor(Math.random() * this.ships.length);
+    if (this.ships[targetId] == this.ship) {
+      return true;
+    }
+    const newDistance = this.distanceToShip(targetId)
+    if (newDistance < distance) {
+      this.targetId = targetId;
+      return true;
+    }
+    return false;
+  }
+
+  distanceToShip(targetId) {
+    return planck.Vec2.lengthOf(
+      this.ships[targetId].body.getLocalPoint(
+        this.ship.getPosition()
+      )
+    );
+  }
+
+  evadeTarget() {
+    const myPos = this.ship.getPosition();
+    const relative = myPos.sub(this.ships[this.targetId].getPosition());
+    this.target = myPos.add(relative);
+    this.ship.signals.forward = 1.0; // Always full speed ahead
   }
 
   interceptTarget() {

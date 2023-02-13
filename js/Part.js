@@ -8,6 +8,25 @@ class Part {
     this.parent = parent;
   }
 
+  hasAbility(ability) {
+    if (!this.signals) {
+      return false;
+    }
+    
+    return this.signals.reduce((prev, cur) => {
+      if (prev) {
+        return prev;
+      }
+
+      switch (ability) {
+        case 'shoot': return cur.signal == 'shootPrimary' || cur.signal == 'shootSecondary';
+        case 'turn': return cur.signal == 'turnLeft' || cur.signal == 'turnRight';
+        case 'accelerate': return cur.signal == 'forward';
+        default: return false;
+      }
+    }, false);
+  }
+
   act(spf, signals, ship) {
     if (this.parent && this.parent.destroy) {
       this.destroy = true;

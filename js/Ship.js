@@ -2,6 +2,9 @@ class Ship {
   constructor(x, y, playerControlled, game) {
     this.game = game;
     this.category = 'ship';
+    this.canShoot = true;
+    this.canTurn = true;
+    this.canAccel = true;
     
     this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setUserData(this);
@@ -82,6 +85,11 @@ class Ship {
     }
     let signals = this.autoStop();
     let rebuild = false;
+
+    this.canShoot = false;
+    this.canTurn = false;
+    this.canAccel = false;
+
     this.parts.forEach((part, i) => {
       if (part.destroy) {
         this.debrisFromPart(part);
@@ -89,11 +97,22 @@ class Ship {
         rebuild = true;
         return;
       }
+
       part.act(spf, signals, this);
       c.save();
       c.translate(part.pos.x, part.pos.y);
       part.draw(c, signals);
       c.restore();
+
+      if (part.hasAbility('shoot')) {
+        this.canShoot = true;
+      }
+      if (part.hasAbility('turn')) {
+        this.canTurn = true;
+      }
+      if (part.hasAbility('accelerate')) {
+        this.canAccel = true;
+      }
     });
 
     const position = this.body.getWorldPoint(planck.Vec2(0, 0));
@@ -104,6 +123,12 @@ class Ship {
 
     if (rebuild) {
       this.updateBody();
+    }
+
+    if (!this.canAccel || !this.canTurn || (!this.canShoot && Math.random() < 0.1)) {
+      this.parts.forEach((part) => {
+        part.destroy = true;
+      });
     }
   }
 
@@ -338,23 +363,27 @@ class Ship {
         ];
       case 5:
         return [
-          [ 0, -0.5, 'hull', 0, false ],
-          [ 0, 0.5, 'hull', 1, false ],
+          [ 0.3, 0, 'auto cannon', 0, [
+            { signal: 'shootPrimary', strength: 1 }, // Activate on shooty
+          ]],
 
-          [ -1.0, -0.5, 'main thruster', 0, [
+          [ 0, 0.5, 'hull', 0, false ],
+          [ 0, -0.5, 'hull', 0, false ],
+
+          [ -1.0, -0.5, 'main thruster', 2, [
             { signal: 'forward', strength: 1 }, // Activate on forward
           ]],
           [ -1.0, 0.5, 'main thruster', 1, [
             { signal: 'forward', strength: 1 }, // Activate on forward
           ]],
-          [ 1.5, -0.5, 'retro thruster', 0, [
+          [ 1.5, -0.5, 'retro thruster', 2, [
             { signal: 'reverse', strength: 1 }, // Activate on reverse
           ]],
           [ 1.5, 0.5, 'retro thruster', 1, [
             { signal: 'reverse', strength: 1 }, // Activate on reverse
           ]],
 
-          [ 0.6, -0.6, 'right thruster', 0, [
+          [ 0.6, -0.6, 'right thruster', 2, [
             { signal: 'turnLeft', strength: 1 }, // Activate on turn
             { signal: 'strafeLeft', strength: 1 }, // Activate on strafe
           ]],
@@ -362,17 +391,13 @@ class Ship {
             { signal: 'turnRight', strength: 1 }, // Activate on turn
             { signal: 'strafeRight', strength: 1 }, // Activate on strafe
           ]],
-          [ -0.8, -1.1, 'right thruster', 0, [
+          [ -0.8, -1.1, 'right thruster', 2, [
             { signal: 'turnRight', strength: 1 }, // Activate on turn
             { signal: 'strafeLeft', strength: 1 }, // Activate on strafe
           ]],
           [ -0.8, 1.1, 'left thruster', 1, [
             { signal: 'turnLeft', strength: 1 }, // Activate on turn
             { signal: 'strafeRight', strength: 1 }, // Activate on strafe
-          ]],
-          
-          [ 0.3, 0, 'auto cannon', 0, [
-            { signal: 'shootPrimary', strength: 1 }, // Activate on shooty
           ]],
         ];
       default:
