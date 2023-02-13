@@ -219,19 +219,10 @@ class Game {
   }
 
   addShips() {
-
-    // This is you
-    this.ships.push(new Ship(
-      -1,
-      2,
-      Math.floor(Math.random() * 3),
-      true,
-      this
-    ));
-
-    this.teams.push(10);
-    this.teams.push(10);
-    this.teams.push(10);
+    this.teams[0] = 20;
+    this.teams[1] = 20;
+    this.teams[2] = 20;
+    this.addTeamShip(Math.floor(Math.random() * 3));
   }
 
   addTeamShip(team) {
@@ -251,7 +242,7 @@ class Game {
   }
 
   emptyWorld() {
-    this.teams = [];
+    this.teams = [0, 0, 0];
     this.particles = [];
     this.ships = [];
     this.bullets = [];
