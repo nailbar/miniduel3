@@ -184,7 +184,7 @@ class Ship {
   buildShip() {
     const s = this.getSchematic();
     s.forEach((part, i) => {
-      part[5] = new Part(part[0], part[1], part[2], part[3] >= i ? false : s[part[3]][5], part[4]);
+      part[5] = new Part(part[0], part[1], part[2], part[3] >= i ? false : s[part[3]][5], part[4], this.game);
       this.parts.push(part[5]);
     });
     this.updateBody();

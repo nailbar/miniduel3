@@ -227,6 +227,8 @@ class Game {
   fixCanvasSize() {
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
+    this.c.lineWidth = 0.1;
+    this.c.lineJoin = 'round';
   }
 
   addBullet(x, y, vx, vy, type) {
@@ -238,7 +240,7 @@ class Game {
   }
 
   addParticle(x, y, vx, vy, type) {
-    this.particles.push(new Particle(x, y, vx, vy, type));
+    this.particles.push(new Particle(x, y, vx, vy, type, this));
   }
 
   handleHits(contact) {
@@ -286,6 +288,7 @@ class Game {
     const width = canvas.width / this.scale;
     const height = canvas.height / this.scale;
     const pos = this.ships[0].getPosition();
+    this.setColors('star');
     this.stars.forEach((star) => {
       if (star.x < pos.x - width * 0.5) {
         star.x += width;
@@ -301,5 +304,35 @@ class Game {
       }
       this.c.fillRect(star.x, star.y, 0.2, 0.2);
     });
+  }
+
+  setColors(item) {
+    switch (item) {
+      case 'hull':
+        this.c.fillStyle = '#aab';
+        this.c.strokeStyle = '#889';
+        break;
+      case 'greeble':
+        this.c.fillStyle = '#777';
+        this.c.strokeStyle = '#555';
+        break;
+      case 'thruster exhaust':
+        this.c.fillStyle = '#f93';
+        this.c.strokeStyle = '#f41';
+        break;
+      case 'blaster bullet':
+        this.c.fillStyle = '#f40';
+        this.c.strokeStyle = '#f20';
+        break;
+      case 'spark':
+        this.c.fillStyle = '#f93';
+        break;
+      case 'star':
+        this.c.fillStyle = '#fff';
+        break;
+      default:
+        this.c.fillStyle = '#fff';
+        this.c.strokeStyle = '#000';
+    }
   }
 }

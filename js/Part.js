@@ -1,11 +1,12 @@
 class Part {
-  constructor(x, y, type, parent, signals) {
+  constructor(x, y, type, parentPart, signals, game) {
+    this.game = game;
     this.pos = { x, y };
     this.type = type;
     this.signals = signals;
     this.reload = 0;
     this.damage = 0;
-    this.parent = parent;
+    this.parentPart = parentPart;
   }
 
   hasAbility(ability) {
@@ -28,7 +29,7 @@ class Part {
   }
 
   act(spf, signals, ship) {
-    if (this.parent && this.parent.destroy) {
+    if (this.parentPart && this.parentPart.destroy) {
       this.destroy = true;
       return;
     }
@@ -71,13 +72,13 @@ class Part {
         break;
       case 'blaster':
         if (this.reload <= 0) {
-          this.reload = 0.5;
+          this.reload = 0.3;
           this.addBullet(ship);
         }
         break;
       case 'auto cannon':
         if (this.reload <= 0) {
-          this.reload = 0.2;
+          this.reload = 0.1;
           this.addBullet(ship);
         }
         break;
@@ -101,7 +102,7 @@ class Part {
   draw(c, signals) {
     c.beginPath();
     let first = true;
-    this.getShape().forEach((point) => {
+    this.getShape(true).forEach((point) => {
       if (first) {
         c.moveTo(point.x, point.y);
         first = false;
@@ -111,6 +112,7 @@ class Part {
     });
     c.closePath();
     c.fill();
+    c.stroke();
     this.drawOnSignal(c, signals);
   }
 
@@ -125,6 +127,7 @@ class Part {
     // Draw if activated
     switch (this.type) {
       case 'left thruster':
+        this.game.setColors('thruster exhaust');
         c.beginPath();
         c.moveTo(-0.1, 0.1 + (0.1) * strength);
         c.lineTo(0, 0.1);
@@ -132,8 +135,10 @@ class Part {
         c.lineTo(0, 0.1 + (0.2 + Math.random() * 0.3) * strength);
         c.closePath();
         c.fill();
+        c.stroke();
         break;
       case 'right thruster':
+        this.game.setColors('thruster exhaust');
         c.beginPath();
         c.moveTo(-0.1, -0.1 - (0.1) * strength);
         c.lineTo(0, -0.1);
@@ -141,8 +146,10 @@ class Part {
         c.lineTo(0, -0.1 - (0.2 + Math.random() * 0.3) * strength);
         c.closePath();
         c.fill();
+        c.stroke();
         break;
       case 'main thruster':
+        this.game.setColors('thruster exhaust');
         c.beginPath();
         c.moveTo(-0.2, 0);
         c.lineTo(-0.2 - (0.2 + Math.random() * 0.2) * strength, 0.3);
@@ -150,8 +157,10 @@ class Part {
         c.lineTo(-0.2 - (0.2 + Math.random() * 0.2) * strength, -0.3);
         c.closePath();
         c.fill();
+        c.stroke();
         break;
       case 'retro thruster':
+        this.game.setColors('thruster exhaust');
         c.beginPath();
         c.moveTo(0.2, 0);
         c.lineTo(0.2 + (0.1 + Math.random() * 0.1) * strength, 0.15);
@@ -159,6 +168,7 @@ class Part {
         c.lineTo(0.2 + (0.1 + Math.random() * 0.1) * strength, -0.15);
         c.closePath();
         c.fill();
+        c.stroke();
         break;
       default:
     }
@@ -180,9 +190,12 @@ class Part {
     return active;
   }
 
-  getShape() {
+  getShape(setColors) {
     switch (this.type) {
       case 'hull':
+        if (setColors) {
+          this.game.setColors('hull');
+        }
         return [
           { x: -1, y: -0.7 },
           { x: -0.9, y: 0 },
@@ -191,6 +204,9 @@ class Part {
           { x: 1.5, y: -0.1 },
         ];
       case 'hull2':
+        if (setColors) {
+          this.game.setColors('hull');
+        }
         return [
           { x: -1, y: -1.2 },
           { x: -1.1, y: 0 },
@@ -199,6 +215,9 @@ class Part {
           { x: 1.3, y: -0.4 },
         ];
       case 'main thruster':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: 0.2, y: -0.2 },
           { x: 0.2, y: 0.2 },
@@ -206,6 +225,9 @@ class Part {
           { x: -0.2, y: -0.3 },
         ];
       case 'retro thruster':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: 0.2, y: -0.15 },
           { x: 0.2, y: 0.15 },
@@ -213,6 +235,9 @@ class Part {
           { x: -0.2, y: -0.2 },
         ];
       case 'left thruster':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: -0.1, y: 0.1 },
           { x: -0.15, y: -0.1 },
@@ -220,6 +245,9 @@ class Part {
           { x: 0.1, y: 0.1 },
         ];
       case 'right thruster':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: 0.1, y: -0.1 },
           { x: 0.15, y: 0.1 },
@@ -227,6 +255,9 @@ class Part {
           { x: -0.1, y: -0.1 },
         ];
       case 'blaster':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: -0.1, y: -0.1 },
           { x: 0.2, y: -0.05 },
@@ -234,6 +265,9 @@ class Part {
           { x: -0.1, y: 0.1 },
         ];
       case 'auto cannon':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
         return [
           { x: -0.1, y: -0.2 },
           { x: 0.2, y: -0.15 },
@@ -241,6 +275,9 @@ class Part {
           { x: -0.1, y: 0.2 },
         ];
       default:
+        if (setColors) {
+          this.game.setColors('default');
+        }
         return [
           { x: 1, y: 1 },
           { x: -1, y: 1 },

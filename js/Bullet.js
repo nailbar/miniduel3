@@ -8,7 +8,7 @@ class Bullet {
       position: planck.Vec2(x, y),
       linearVelocity: planck.Vec2(vx, vy),
     });
-    this.body.createFixture(planck.Circle(0.2), 5);
+    this.body.createFixture(planck.Circle(0.1), 5);
     this.body.setUserData(this);
     
     this.type = type;
@@ -20,8 +20,10 @@ class Bullet {
     if (this.age > 3.0) {
       this.destroy = true;
     }
+    this.game.setColors('blaster bullet');
     c.beginPath();
     c.arc(0, 0, 0.2, 0, Math.PI * 2.0);
+    c.stroke();
     c.fill();
   }
 
