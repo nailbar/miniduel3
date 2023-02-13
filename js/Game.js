@@ -73,11 +73,8 @@ class Game {
       this.ships.push(new Ship(
         Math.cos(dir) * 200.0,
         Math.sin(dir) * 200.0,
-        this.physics,
-        this.ships,
         false,
-        this.addBullet,
-        this.addDebris
+        this
       ));
     }
     
@@ -212,11 +209,8 @@ class Game {
     this.ships.push(new Ship(
       190,
       20,
-      this.physics,
-      this.ships,
       true,
-      this.addBullet,
-      this.addDebris
+      this
     ));
   }
 
@@ -236,11 +230,11 @@ class Game {
   }
 
   addBullet(x, y, vx, vy, type) {
-    this.bullets.push(new Bullet(x, y, vx, vy, this.physics, type, this.ships, this.addParticle));
+    this.bullets.push(new Bullet(x, y, vx, vy, type, this));
   }
 
   addDebris(x, y, vx, vy, dir, type) {
-    this.debris.push(new Debris(x, y, vx, vy, dir, type, this.physics, this.addParticle));
+    this.debris.push(new Debris(x, y, vx, vy, dir, type, this));
   }
 
   addParticle(x, y, vx, vy, type) {

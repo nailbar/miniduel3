@@ -1,13 +1,12 @@
 class Debris {
-  constructor(x, y, vx, vy, dir, type, physics, addParticle) {
+  constructor(x, y, vx, vy, dir, type, game) {
+    this.game = game;
     this.type = type;
-    this.physics = physics;
     this.category = 'debris';
-    this.addParticle = addParticle;
     this.part = new Part(0, 0, type, this);
     this.deathClock = 1.0 + Math.random() * 20.0;
 
-    this.body = physics.createDynamicBody(planck.Vec2(x, y));
+    this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setAngle(dir);
     this.body.setAngularVelocity(Math.random() * 20.0 - 10.0);
     this.body.setLinearVelocity(planck.Vec2(vx, vy));
@@ -29,7 +28,7 @@ class Debris {
     const position = this.body.getWorldPoint(planck.Vec2(0, 0));
     const particles = this.body.getMass() * 3.0;
     for (let i = 0; i < particles; i++) {
-      this.addParticle(
+      this.game.addParticle(
         position.x,
         position.y,
         Math.random() * 50 - 25,
@@ -37,6 +36,6 @@ class Debris {
         'spark'
       );
     }
-    this.physics.destroyBody(this.body);
+    this.game.physics.destroyBody(this.body);
   }
 }

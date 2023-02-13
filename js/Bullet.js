@@ -1,9 +1,8 @@
 class Bullet {
-  constructor(x, y, vx, vy, physics, type, ships, addParticle) {
+  constructor(x, y, vx, vy, type, game) {
+    this.game = game;
     this.category = 'bullet';
-    this.physics = physics;
-    this.addParticle = addParticle;
-    this.body = physics.createBody({
+    this.body = this.game.physics.createBody({
       bullet: true,
       type: 'dynamic',
       position: planck.Vec2(x, y),
@@ -13,7 +12,6 @@ class Bullet {
     this.body.setUserData(this);
     
     this.type = type;
-    this.ships = ships;
     this.age = 0;
   }
 
@@ -33,7 +31,7 @@ class Bullet {
 
     if (this.age < 3.0) {
       for (let i = 0; i < particles; i++) {
-        this.addParticle(
+        this.game.addParticle(
           position.x,
           position.y,
           Math.random() * 50 - 25,
@@ -43,6 +41,6 @@ class Bullet {
       }
     }
 
-    this.physics.destroyBody(this.body);
+    this.game.physics.destroyBody(this.body);
   }
 }

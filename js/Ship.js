@@ -1,20 +1,17 @@
 class Ship {
-  constructor(x, y, physics, ships, playerControlled, addBullet, addDebris) {
-    const Vec2 = planck.Vec2;
+  constructor(x, y, playerControlled, game) {
+    this.game = game;
     this.category = 'ship';
-    this.physics = physics;
-    this.body = physics.createDynamicBody(Vec2(x, y));
+    
+    this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setUserData(this);
-    this.addBullet = addBullet;
-    this.addDebris = addDebris;
     this.parts = [];
-    this.initSignals();
-
-    if (!playerControlled) {
-      this.ai = new ShipAi(this, ships);
-    }
-
     this.buildShip();
+
+    this.initSignals();
+    if (!playerControlled) {
+      this.ai = new ShipAi(this, game.ships);
+    }
   }
   
   autoStop() {
@@ -113,7 +110,7 @@ class Ship {
   debrisFromPart(part) {
     const point = this.body.getWorldPoint(planck.Vec2(part.pos.x, part.pos.y));
     const velocity = this.body.getLinearVelocity();
-    this.addDebris(
+    this.game.addDebris(
       point.x,
       point.y,
       velocity.x + Math.random() * 10 - 5,
@@ -156,7 +153,7 @@ class Ship {
   }
 
   unCreate() {
-    this.physics.destroyBody(this.body);
+    this.game.physics.destroyBody(this.body);
   }
 
   buildShip() {

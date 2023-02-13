@@ -70,7 +70,7 @@ class Part {
     const pos = ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y));
     const vec = ship.body.getWorldVector(planck.Vec2(1, 0));
     const vel = ship.body.getLinearVelocity();
-    ship.addBullet(
+    ship.game.addBullet(
       pos.x + vec.x * 0.5,
       pos.y + vec.y * 0.5,
       vel.x + vec.x * 70.0,
