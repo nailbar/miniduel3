@@ -1,8 +1,9 @@
 class Part {
-  constructor(x, y, type, parentPart, signals, game) {
+  constructor(x, y, type, parentPart, team, signals, game) {
     this.game = game;
     this.pos = { x, y };
     this.type = type;
+    this.team = team;
     this.signals = signals;
     this.reload = 0;
     this.damage = 0;
@@ -151,10 +152,10 @@ class Part {
       case 'main thruster':
         this.game.setColors('thruster exhaust');
         c.beginPath();
-        c.moveTo(-0.2, 0);
-        c.lineTo(-0.2 - (0.2 + Math.random() * 0.2) * strength, 0.3);
-        c.lineTo(-0.2 - (1.0 + Math.random() * 0.5) * strength, 0);
-        c.lineTo(-0.2 - (0.2 + Math.random() * 0.2) * strength, -0.3);
+        c.moveTo(-0.35, 0);
+        c.lineTo(-0.35 - (0.2 + Math.random() * 0.2) * strength, 0.3);
+        c.lineTo(-0.35 - (1.0 + Math.random() * 0.5) * strength, 0);
+        c.lineTo(-0.35 - (0.2 + Math.random() * 0.2) * strength, -0.3);
         c.closePath();
         c.fill();
         c.stroke();
@@ -192,9 +193,22 @@ class Part {
 
   getShape(setColors) {
     switch (this.type) {
+      case 'life support':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
+        return [
+          { x: 0.8, y: -0.1 },
+          { x: 0.8, y: 0.1 },
+          { x: 0.4, y: 0.4 },
+          { x: -0.5, y: 0.4 },
+          { x: -0.6, y: 0 },
+          { x: -0.5, y: -0.4 },
+          { x: 0.4, y: -0.4 },
+        ];
       case 'hull':
         if (setColors) {
-          this.game.setColors('hull');
+          this.game.setColors('hull ' + this.team);
         }
         return [
           { x: -1, y: -0.7 },
@@ -205,7 +219,7 @@ class Part {
         ];
       case 'hull2':
         if (setColors) {
-          this.game.setColors('hull');
+          this.game.setColors('hull ' + this.team);
         }
         return [
           { x: -1, y: -1.2 },
@@ -219,10 +233,10 @@ class Part {
           this.game.setColors('greeble');
         }
         return [
-          { x: 0.2, y: -0.2 },
-          { x: 0.2, y: 0.2 },
-          { x: -0.2, y: 0.3 },
-          { x: -0.2, y: -0.3 },
+          { x: 0.3, y: -0.3 },
+          { x: 0.3, y: 0.3 },
+          { x: -0.3, y: 0.35 },
+          { x: -0.3, y: -0.35 },
         ];
       case 'retro thruster':
         if (setColors) {

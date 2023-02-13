@@ -1,9 +1,9 @@
 class Debris {
-  constructor(x, y, vx, vy, dir, type, game) {
+  constructor(x, y, vx, vy, dir, type, team, game) {
     this.game = game;
     this.type = type;
     this.category = 'debris';
-    this.part = new Part(0, 0, type, this, false, this.game);
+    this.part = new Part(0, 0, type, false, team, false, game);
     this.deathClock = 1.0 + Math.random() * 20.0;
 
     this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));

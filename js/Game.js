@@ -187,6 +187,7 @@ class Game {
     );
 
     // Draw "home" indicator
+    this.setColors('home');
     this.c.beginPath();
     this.c.arc(0, 0, 0.5, 0, Math.PI * 2.0);
     const distance = planck.Vec2.lengthOf(position);
@@ -235,8 +236,8 @@ class Game {
     this.bullets.push(new Bullet(x, y, vx, vy, type, this));
   }
 
-  addDebris(x, y, vx, vy, dir, type) {
-    this.debris.push(new Debris(x, y, vx, vy, dir, type, this));
+  addDebris(x, y, vx, vy, dir, type, team) {
+    this.debris.push(new Debris(x, y, vx, vy, dir, type, team, this));
   }
 
   addParticle(x, y, vx, vy, type) {
@@ -308,9 +309,17 @@ class Game {
 
   setColors(item) {
     switch (item) {
-      case 'hull':
-        this.c.fillStyle = '#aab';
-        this.c.strokeStyle = '#889';
+      case 'hull 0':
+        this.c.fillStyle = '#f56';
+        this.c.strokeStyle = '#a23';
+        break;
+      case 'hull 1':
+        this.c.fillStyle = '#5c6';
+        this.c.strokeStyle = '#293';
+        break;
+      case 'hull 2':
+        this.c.fillStyle = '#68f';
+        this.c.strokeStyle = '#35a';
         break;
       case 'greeble':
         this.c.fillStyle = '#777';
@@ -326,9 +335,19 @@ class Game {
         break;
       case 'spark':
         this.c.fillStyle = '#f93';
+        this.c.strokeStyle = '#f93';
         break;
       case 'star':
         this.c.fillStyle = '#fff';
+        this.c.strokeStyle = '#fff';
+        break;
+      case 'home':
+        this.c.fillStyle = '#09f';
+        this.c.strokeStyle = '#09f';
+        break;
+      case 'enemy':
+        this.c.fillStyle = '#f00';
+        this.c.strokeStyle = '#f00';
         break;
       default:
         this.c.fillStyle = '#fff';
