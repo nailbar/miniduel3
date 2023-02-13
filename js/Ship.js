@@ -1,11 +1,11 @@
 class Ship {
-  constructor(x, y, playerControlled, game) {
+  constructor(x, y, team, playerControlled, game) {
     this.game = game;
     this.category = 'ship';
     this.canShoot = true;
     this.canTurn = true;
     this.canAccel = true;
-    this.team = Math.floor(Math.random() * 3);
+    this.team = team;
     
     this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setLinearDamping(0.1);

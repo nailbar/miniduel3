@@ -12,12 +12,12 @@ class Bullet {
     this.body.setUserData(this);
     
     this.type = type;
-    this.age = 0;
+    this.ttl = 1.0;
   }
 
   actAndDraw(c, spf) {
-    this.age += spf;
-    if (this.age > 3.0) {
+    this.ttl -= spf;
+    if (this.ttl <= 0) {
       this.destroy = true;
     }
     this.game.setColors('blaster bullet');
@@ -31,7 +31,7 @@ class Bullet {
     const position = this.body.getWorldPoint(planck.Vec2(0, 0));
     const particles = Math.floor(Math.random() * 10) + 3;
 
-    if (this.age < 3.0) {
+    if (this.ttl > 0) {
       for (let i = 0; i < particles; i++) {
         this.game.addParticle(
           position.x,

@@ -67,23 +67,20 @@ class Game {
   }
 
   doShips(spf) {
-    let dir;
-    while (this.ships.length < 20) {
-      dir = Math.random() * Math.PI * 2.0;
-      this.ships.push(new Ship(
-        Math.cos(dir) * 200.0,
-        Math.sin(dir) * 200.0,
-        false,
-        this
-      ));
-    }
-    
+    const teamShips = [
+      { team: 0, ships: 0, waiting: this.teams[0] },
+      { team: 1, ships: 0, waiting: this.teams[1] },
+      { team: 2, ships: 0, waiting: this.teams[2] },
+    ];
+
     this.ships.forEach((ship, i) => {
       if (ship.parts.length == 0) {
         ship.unCreate();
         this.ships.splice(i, 1);
         return;
       }
+
+      teamShips[ship.team].ships++;
 
       const position = ship.getPosition();
       this.c.save();
@@ -92,6 +89,21 @@ class Game {
       ship.actAndDraw(this.c, spf);
       this.c.restore();
     });
+
+    if (this.ships.length < 10) {
+      const team = teamShips.reduce((prev, cur) => {
+        if (!prev) {
+          return cur;
+        }
+        if (!cur.waiting || cur.ships > prev.ships) {
+          return prev;
+        }
+        return cur;
+      }, false);
+      if (team.waiting) {
+        this.addTeamShip(team.team);
+      }
+    }
   }
 
   doBullets(spf) {
@@ -207,15 +219,39 @@ class Game {
   }
 
   addShips() {
+
+    // This is you
     this.ships.push(new Ship(
-      190,
-      20,
+      -1,
+      2,
+      Math.floor(Math.random() * 3),
       true,
       this
     ));
+
+    this.teams.push(10);
+    this.teams.push(10);
+    this.teams.push(10);
+  }
+
+  addTeamShip(team) {
+    if (this.teams[team] > 0) {
+      const position = this.getTeamStartPos(team);
+      this.ships.push(new Ship(position.x, position.y, team, false, this));
+      this.teams[team]--;
+    }
+  }
+
+  getTeamStartPos(team) {
+    const dir = (Math.PI * 2.0 / 3) * team;
+    return {
+      x: Math.cos(dir) * 100.0 + Math.random() * 30.0,
+      y: Math.sin(dir) * 100.0 + Math.random() * 30.0
+    };
   }
 
   emptyWorld() {
+    this.teams = [];
     this.particles = [];
     this.ships = [];
     this.bullets = [];

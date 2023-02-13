@@ -115,7 +115,7 @@ class ShipAi {
   }
 
   checkTarget() {
-    if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId] == this.ship) {
+    if (this.targetId < 0 || this.targetId >= this.ships.length || this.ships[this.targetId].team == this.ship.team) {
       this.targetId = Math.floor(Math.random() * this.ships.length);
       return true;
     }
@@ -124,7 +124,7 @@ class ShipAi {
 
   findNearestTarget(distance) {
     const targetId = Math.floor(Math.random() * this.ships.length);
-    if (this.ships[targetId] == this.ship) {
+    if (this.ships[targetId].team == this.ship.team) {
       return true;
     }
     const newDistance = this.distanceToShip(targetId)
