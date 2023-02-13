@@ -151,7 +151,7 @@ class Game {
     const spf = (timestamp - this.timestamp) / 1000.0;
     this.timestamp = timestamp;
 
-    return spf;
+    return spf > 1.0 ? 0.001 : spf;
   }
 
   startGameLoop() {
