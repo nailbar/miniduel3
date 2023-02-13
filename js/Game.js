@@ -43,6 +43,7 @@ class Game {
       { team: 1, ships: 0, waiting: this.teams[1] },
       { team: 2, ships: 0, waiting: this.teams[2] },
     ];
+    const teamHasShips = [0, 0, 0];
     this.hasPlayer = false;
 
     this.ships.forEach((ship, i) => {
@@ -53,6 +54,7 @@ class Game {
       }
 
       teamShips[ship.team].ships++;
+      teamHasShips[ship.team] = 1;
 
       if (ship.ai.category == 'player') {
         this.hasPlayer = true;
@@ -78,6 +80,17 @@ class Game {
       }, false);
       if (team.waiting) {
         this.addTeamShip(team.team);
+        teamHasShips[team.team] = 1;
+      }
+    }
+
+    // Restart game when only one or no team remaining
+    if (teamHasShips.reduce((prev, cur) => {
+      return prev + cur;
+    }, 0) < 2) {
+      this.endTimer -= spf;
+      if (this.endTimer <= 0) {
+        this.createWorld();
       }
     }
   }
@@ -205,6 +218,7 @@ class Game {
   }
 
   populateWorld() {
+    this.endTimer = 10.0;
     this.teams[0] = 2;
     this.teams[1] = 2;
     this.teams[2] = 2;
