@@ -202,6 +202,12 @@ class Ship {
     this.updateBody();
   }
 
+  getDistanceTo(point) {
+    const Vec2 = planck.Vec2;
+    const myPos = this.getPosition();
+    return Vec2.lengthOf(Vec2(point.x, point.y).sub(Vec2(myPos.x, myPos.y)));
+  }
+
   getSchematic() {
     switch (Math.floor(Math.random() * 1)) {
       case 0:

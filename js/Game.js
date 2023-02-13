@@ -210,6 +210,30 @@ class Game {
       this.c.arc(position.x + vector.x * 10, position.y + vector.y * 10, 0.3, 0, Math.PI * 2.0);
     }
     this.c.fill();
+
+    this.drawTargetIndicator();
+  }
+
+  drawTargetIndicator() {
+    const Vec2 = planck.Vec2;
+    if (this.follow && this.follow.ai.category == 'player' && this.follow.ai.target.team != this.follow.team) {
+      const myPos = this.follow.getPosition();
+      const position = this.follow.ai.target.getPosition();
+      const relative = Vec2(position.x - myPos.x, position.y - myPos.y);
+      const distance = planck.Vec2.lengthOf(relative);
+
+      this.setColors('enemy');
+      this.c.beginPath();
+      this.c.arc(position.x, position.y, 3.0, 0, Math.PI * 2.0);
+      this.c.stroke();
+
+      if (distance > 10) {
+        const vector = relative.mul(1.0 / distance);
+        this.c.beginPath();
+        this.c.arc(myPos.x + vector.x * 10, myPos.y + vector.y * 10, 0.3, 0, Math.PI * 2.0);
+        this.c.fill();
+      }
+    }
   }
 
   createWorld() {
@@ -384,5 +408,12 @@ class Game {
         this.c.fillStyle = '#fff';
         this.c.strokeStyle = '#000';
     }
+  }
+
+  getRandomShip() {
+    if (this.ships.length == 0) {
+      return null;
+    }
+    return this.ships[Math.floor(Math.random() * this.ships.length)];
   }
 }
