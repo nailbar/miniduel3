@@ -12,7 +12,7 @@ class Bullet {
     this.body.setUserData(this);
     
     this.type = type;
-    this.ttl = 1.0;
+    this.ttl = 2.0;
   }
 
   actAndDraw(c, spf) {

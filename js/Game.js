@@ -9,7 +9,9 @@ class Game {
     this.addParticle = this.addParticle.bind(this);
     this.handleHits = this.handleHits.bind(this);
 
+    this.maxShips = 6;
     this.follow = false;
+    this.myTeam = Math.floor(Math.random() * 3);
 
     this.fixCanvasSize();
     this.createWorld();
@@ -27,6 +29,7 @@ class Game {
 
   actAndDraw(spf) {
     this.c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.infoText();
     this.c.save();
     this.fixCamera();
     this.drawParallax();
@@ -35,6 +38,21 @@ class Game {
     this.doDebris(spf);
     this.doParticles(spf);
     this.c.restore();
+  }
+
+  infoText() {
+    this.setColors('text');
+    this.c.fillText('Controls:', 10, 20);
+    this.c.fillText('Forward: I or Up', 10, 30);
+    this.c.fillText('Turn left: J or Left', 10, 40);
+    this.c.fillText('Turn right: L or Right', 10, 50);
+    this.c.fillText('Reverse: K or Down', 10, 60);
+    this.c.fillText('Strafe left: A', 10, 70);
+    this.c.fillText('Strafe right: D', 10, 80);
+    this.c.fillText('Shoot primary: W or Shift', 10, 90);
+    this.c.fillText('Shoot secondary: S or Enter', 10, 100);
+    this.c.fillText('Slide: X or Space', 10, 110);
+    this.c.fillText('Select nearest target: T', 10, 120);
   }
 
   doShips(spf) {
@@ -68,7 +86,7 @@ class Game {
       this.c.restore();
     });
 
-    if (this.ships.length < 10) {
+    if (this.ships.length < this.maxShips) {
       const team = teamShips.reduce((prev, cur) => {
         if (!prev) {
           return cur;
@@ -243,21 +261,27 @@ class Game {
 
   populateWorld() {
     this.endTimer = 10.0;
-    this.teams[0] = 2;
-    this.teams[1] = 2;
-    this.teams[2] = 2;
+    this.teams[0] = 20;
+    this.teams[1] = 20;
+    this.teams[2] = 20;
     this.addTeamShip(Math.floor(Math.random() * 3));
   }
 
   addTeamShip(team) {
+
+    // Always spawn player if possible
+    if (!this.hasPlayer && this.teams[this.myTeam] > 0) {
+      team = this.myTeam;
+    }
+
     if (this.teams[team] > 0) {
       const position = this.getTeamStartPos(team);
       this.ships.push(new Ship(position.x, position.y, team, this.hasPlayer ? false : true, this));
       this.teams[team]--;
-      if (!this.hasPlayer) {
+      if (!this.hasPlayer && this.ships[this.ships.length - 1].team == this.myTeam) {
         this.follow = this.ships[this.ships.length - 1];
+        this.hasPlayer = true;
       }
-      this.hasPlayer = true;
     }
   }
 
@@ -403,6 +427,10 @@ class Game {
       case 'enemy':
         this.c.fillStyle = '#f00';
         this.c.strokeStyle = '#f00';
+        break;
+      case 'text':
+        this.c.fillStyle = '#779';
+        this.c.strokeStyle = '#779';
         break;
       default:
         this.c.fillStyle = '#fff';
