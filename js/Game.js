@@ -277,9 +277,10 @@ class Game {
 
     if (this.teams[team] > 0) {
       const position = this.getTeamStartPos(team);
-      this.ships.push(new Ship(position.x, position.y, team, this.hasPlayer ? false : true, this));
+      this.ships.push(new Ship(position.x, position.y, team, this));
       this.teams[team]--;
       if (!this.hasPlayer && this.ships[this.ships.length - 1].team == this.myTeam) {
+        this.ships[this.ships.length - 1].makePlayerControlled();
         this.follow = this.ships[this.ships.length - 1];
         this.hasPlayer = true;
       }

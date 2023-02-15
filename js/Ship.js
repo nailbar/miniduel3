@@ -1,5 +1,5 @@
 class Ship {
-  constructor(x, y, team, playerControlled, game) {
+  constructor(x, y, team, game) {
     this.game = game;
     this.category = 'ship';
     this.canShoot = true;
@@ -14,11 +14,11 @@ class Ship {
     this.buildShip();
 
     this.initSignals();
-    if (playerControlled) {
-      this.ai = new Player(this, game);
-    } else {
-      this.ai = new ShipAi(this, game);
-    }
+    this.ai = new ShipAi(this, game);
+  }
+
+  makePlayerControlled() {
+    this.ai = new Player(this, this.game);
   }
   
   autoStop() {
