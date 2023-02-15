@@ -8,6 +8,9 @@ class Game {
     this.addDebris = this.addDebris.bind(this);
     this.addParticle = this.addParticle.bind(this);
     this.handleHits = this.handleHits.bind(this);
+    this.fixCanvasSize = this.fixCanvasSize.bind(this);
+
+    window.onresize = this.fixCanvasSize;
 
     this.maxShips = 6;
     this.follow = false;
@@ -16,7 +19,6 @@ class Game {
     this.fixCanvasSize();
     this.createWorld();
     this.initKeyListener();
-    this.initParallax();
     this.startGameLoop();
   }
 
@@ -309,8 +311,12 @@ class Game {
   fixCanvasSize() {
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
-    this.c.lineWidth = 0.1;
+    this.c.lineWidth = 0.2;
     this.c.lineJoin = 'round';
+    this.scale = Math.min(this.canvas.width, this.canvas.height) / 100.0;
+
+    // Reset stars
+    this.initParallax();
   }
 
   addBullet(x, y, vx, vy, type) {
