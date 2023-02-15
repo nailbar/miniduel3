@@ -41,6 +41,7 @@ class Game {
     this.doParticles(spf);
     this.c.restore();
     this.drawTargetStatus();
+    this.drawTeamStatus();
   }
 
   infoText() {
@@ -485,6 +486,26 @@ class Game {
       part.drawHealth(this.c);
     });
 
+    this.c.restore();
+  }
+
+  drawTeamStatus() {
+    const teams = [
+      ...this.teams
+    ];
+    this.ships.forEach((ship) => {
+      teams[ship.team]++;
+    });
+
+    this.c.save();
+    this.c.translate(this.canvas.width, this.canvas.height);
+    this.c.scale(-this.scale, -this.scale);
+    for (let team = 0; team < 3; team++) {
+      if (teams[team]) {
+        this.setColors('hull ' + team);
+        this.c.fillRect(0.5, 0.5 + 0.8 * team, teams[team] * 0.5, 0.5);
+      }
+    }
     this.c.restore();
   }
 }
