@@ -32,17 +32,21 @@ class Part {
   act(spf, signals, ship) {
     if (this.parentPart && this.parentPart.destroy) {
       this.destroy = true;
-      return;
+      return 0;
     }
 
+    const powerLevel = ship.getPowerLevel();
+
+    let reloading = false;
     if (this.reload > 0) {
-      this.reload -= spf;
+      this.reload -= spf * powerLevel;
+      reloading = true;
     }
 
     // Check if activated
-    const strength = this.getSignalStrength(signals);
+    const strength = this.getSignalStrength(signals) * powerLevel;
     if (!strength) {
-      return; // Not active
+      return 0; // Not active
     }
 
     // Apply thrust
@@ -52,39 +56,49 @@ class Part {
           ship.body.getWorldVector(planck.Vec2(0, strength * -30.0)),
           ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
         );
-        break;
+        return this.getPowerDraw();
       case 'right thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(0, strength * 30.0)),
           ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
         );
-        break;
+        return this.getPowerDraw();
       case 'main thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(strength * 100.0, 0)),
           ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
         );
-        break;
+        return this.getPowerDraw();
       case 'retro thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(strength * -50.0, 0)),
           ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
         );
-        break;
+        return this.getPowerDraw();
       case 'blaster':
         if (this.reload <= 0) {
           this.reload = 0.3;
           this.addBullet(ship);
+          reloading = true;
+        }
+        if (reloading) {
+          return this.getPowerDraw();
         }
         break;
       case 'auto cannon':
         if (this.reload <= 0) {
           this.reload = 0.1;
           this.addBullet(ship);
+          reloading = true;
+        }
+        if (reloading) {
+          return this.getPowerDraw();
         }
         break;
       default:
     }
+    
+    return 0;
   }
 
   addBullet(ship) {
@@ -100,7 +114,7 @@ class Part {
     );
   }
 
-  draw(c, signals) {
+  draw(c, signals, ship) {
     c.beginPath();
     let first = true;
     this.getShape(true).forEach((point) => {
@@ -114,13 +128,16 @@ class Part {
     c.closePath();
     c.fill();
     c.stroke();
-    this.drawOnSignal(c, signals);
+
+    if (ship) {
+      this.drawOnSignal(c, signals, ship);
+    }
   }
 
-  drawOnSignal(c, signals) {
+  drawOnSignal(c, signals, ship) {
 
     // Check if activated
-    const strength = this.getSignalStrength(signals);
+    const strength = this.getSignalStrength(signals) * ship.getPowerLevel();
     if (!strength) {
       return; // Not active
     }
@@ -326,6 +343,7 @@ class Part {
 
   getMaxDamage() {
     switch (this.type) {
+      case 'life support': return 5.0;
       case 'hull': return 10.0;
       case 'hull2': return 15.0;
       case 'main thruster': return 5.0;
@@ -335,6 +353,27 @@ class Part {
       case 'blaster': return 4.0;
       case 'auto cannon': return 6.0;
       default: return 10000; // "Invincible"
+    }
+  }
+
+  getPowerGeneration() {
+    switch (this.type) {
+      case 'life support': return 2.0;
+      case 'hull': return 10.0;
+      case 'hull2': return 15.0;
+      default: return 0;
+    }
+  }
+
+  getPowerDraw() {
+    switch (this.type) {
+      case 'main thruster': return 7.0;
+      case 'retro thruster': return 4.0;
+      case 'left thruster': return 3.0;
+      case 'right thruster': return 3.0;
+      case 'blaster': return 4.0;
+      case 'auto cannon': return 6.0;
+      default: return 0;
     }
   }
 

@@ -6,6 +6,8 @@ class Ship {
     this.canTurn = true;
     this.canAccel = true;
     this.team = team;
+    this.powerGeneration = 0;
+    this.powerDraw = 0;
     
     this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setLinearDamping(0.1);
@@ -89,6 +91,7 @@ class Ship {
     let signals = this.autoStop();
     let rebuild = false;
     let hasLifeSupport = false;
+    let powerDraw = 0;
 
     this.canShoot = false;
     this.canTurn = false;
@@ -102,10 +105,10 @@ class Ship {
         return;
       }
 
-      part.act(spf, signals, this);
+      powerDraw += part.act(spf, signals, this);
       c.save();
       c.translate(part.pos.x, part.pos.y);
-      part.draw(c, signals);
+      part.draw(c, signals, this);
       c.restore();
 
       if (part.hasAbility('shoot')) {
@@ -140,6 +143,8 @@ class Ship {
       const partId = Math.floor(Math.random() * this.parts.length);
       this.parts[partId].getBulletDamage();
     }
+
+    this.powerDraw = powerDraw;
   }
 
   debrisFromPart(part) {
@@ -194,10 +199,12 @@ class Ship {
   }
 
   buildShip() {
+    this.powerGeneration = 0;
     const s = this.getSchematic();
     s.forEach((part, i) => {
       part[5] = new Part(part[0], part[1], part[2], part[3] >= i ? false : s[part[3]][5], this.team, part[4], this.game);
       this.parts.push(part[5]);
+      this.powerGeneration += part[5].getPowerGeneration();
     });
     this.updateBody();
   }
@@ -238,5 +245,12 @@ class Ship {
           [ 0, 0, 'box', 0, false ],
         ];
     }
+  }
+
+  getPowerLevel() {
+    if (this.powerDraw < this.powerGeneration) {
+      return 1.0;
+    }
+    return 1.0 / this.powerDraw * this.powerGeneration;
   }
 }
