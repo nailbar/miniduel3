@@ -38,6 +38,7 @@ class Game {
     this.doDebris(spf);
     this.doParticles(spf);
     this.c.restore();
+    this.drawTargetStatus();
   }
 
   infoText() {
@@ -428,6 +429,10 @@ class Game {
         this.c.fillStyle = '#f00';
         this.c.strokeStyle = '#f00';
         break;
+      case 'friend':
+        this.c.fillStyle = '#0f0';
+        this.c.strokeStyle = '#0f0';
+        break;
       case 'text':
         this.c.fillStyle = '#779';
         this.c.strokeStyle = '#779';
@@ -443,5 +448,36 @@ class Game {
       return null;
     }
     return this.ships[Math.floor(Math.random() * this.ships.length)];
+  }
+
+  drawTargetStatus() {
+    if (this.follow && this.follow.ai.category == 'player') {
+      if (this.follow.ai.target && !this.follow.ai.target.destroy) {
+        this.drawShipStatus(this.follow.ai.target, 1, 1, 'enemy');
+      }
+      this.drawShipStatus(this.follow, 0, 0, 'friend');
+    }
+  }
+
+  drawShipStatus(ship, cornerX, cornerY, color) {
+    this.c.save();
+    this.c.translate(0, this.canvas.height);
+    this.c.scale(this.scale, -this.scale);
+    this.c.translate(
+      5.5 + (canvas.width / this.scale - 11.0) * cornerX,
+      5.5 + (canvas.height / this.scale - 11.0) * cornerY
+    );
+    this.setColors(color);
+    this.c.clearRect(-5, -5, 10, 10);
+    this.c.beginPath();
+    this.c.rect(-5, -5, 10, 10);
+    this.c.stroke();
+
+    this.c.rotate(ship.body.getAngle());
+    ship.parts.forEach((part) => {
+      part.drawHealth(this.c);
+    });
+
+    this.c.restore();
   }
 }

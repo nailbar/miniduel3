@@ -314,20 +314,50 @@ class Part {
 
   getBulletDamage(bullet) {
     this.damage += 0.5 + Math.random() * 2.5;
-    let maxDamage = 0;
-    switch (this.type) {
-      case 'hull': maxDamage = 10.0; break;
-      case 'hull2': maxDamage = 15.0; break;
-      case 'main thruster': maxDamage = 5.0; break;
-      case 'retro thruster': maxDamage = 4.0; break;
-      case 'left thruster': maxDamage = 3.0; break;
-      case 'right thruster': maxDamage = 3.0; break;
-      case 'blaster': maxDamage = 4.0; break;
-      case 'auto cannon': maxDamage = 6.0; break;
-      default: return; // Invincible
-    }
+    const maxDamage = this.getMaxDamage();
     if (this.damage > maxDamage) {
       this.destroy = true;
     }
+  }
+
+  getHealth() {
+    return Math.min(1.0, Math.max(0.0, 1.0 - 1.0 / this.getMaxDamage() * this.damage));
+  }
+
+  getMaxDamage() {
+    switch (this.type) {
+      case 'hull': return 10.0;
+      case 'hull2': return 15.0;
+      case 'main thruster': return 5.0;
+      case 'retro thruster': return 4.0;
+      case 'left thruster': return 3.0;
+      case 'right thruster': return 3.0;
+      case 'blaster': return 4.0;
+      case 'auto cannon': return 6.0;
+      default: return 10000; // "Invincible"
+    }
+  }
+
+  drawHealth(c) {
+    const health = this.getHealth();
+    const red = Math.floor((1.0 - health) * 255);
+    const green = Math.floor(health * 255);
+    c.fillStyle = 'rgb(' + red + ',' + green + ',0)';
+    
+    c.save();
+    c.translate(this.pos.x, this.pos.y);
+    c.beginPath();
+    let first = true;
+    this.getShape().forEach((point) => {
+      if (first) {
+        c.moveTo(point.x, point.y);
+        first = false;
+        return;
+      }
+      c.lineTo(point.x, point.y);
+    });
+    c.closePath();
+    c.fill();
+    c.restore();
   }
 }
