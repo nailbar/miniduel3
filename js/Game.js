@@ -65,7 +65,6 @@ class Game {
       { team: 2, ships: 0, waiting: this.teams[2] },
     ];
     const teamHasShips = [0, 0, 0];
-    this.hasPlayer = false;
 
     this.ships.forEach((ship, i) => {
       if (ship.parts.length == 0) {
@@ -76,10 +75,6 @@ class Game {
 
       teamShips[ship.team].ships++;
       teamHasShips[ship.team] = 1;
-
-      if (ship.ai.category == 'player') {
-        this.hasPlayer = true;
-      }
 
       const position = ship.getPosition();
       this.c.save();
@@ -273,7 +268,7 @@ class Game {
   addTeamShip(team) {
 
     // Always spawn player if possible
-    if (!this.hasPlayer && this.teams[this.myTeam] > 0) {
+    if (!this.hasPlayer() && this.teams[this.myTeam] > 0) {
       team = this.myTeam;
     }
 
@@ -281,12 +276,17 @@ class Game {
       const position = this.getTeamStartPos(team);
       this.ships.push(new Ship(position.x, position.y, team, this));
       this.teams[team]--;
-      if (!this.hasPlayer && this.ships[this.ships.length - 1].team == this.myTeam) {
+      if (!this.hasPlayer() && this.ships[this.ships.length - 1].team == this.myTeam) {
         this.ships[this.ships.length - 1].makePlayerControlled();
         this.follow = this.ships[this.ships.length - 1];
-        this.hasPlayer = true;
       }
     }
+  }
+
+  hasPlayer() {
+    return this.ships.reduce((prev, cur) => {
+      return cur.ai.category == 'player' || prev;
+    }, false);
   }
 
   getTeamStartPos(team) {
