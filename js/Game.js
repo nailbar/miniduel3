@@ -12,7 +12,7 @@ class Game {
 
     window.onresize = this.fixCanvasSize;
 
-    this.maxShips = 6;
+    this.maxShips = 12;
     this.follow = false;
     this.myTeam = Math.floor(Math.random() * 3);
 
@@ -233,7 +233,7 @@ class Game {
 
   drawTargetIndicator() {
     const Vec2 = planck.Vec2;
-    if (this.follow && this.follow.ai.category == 'player' && this.follow.ai.target.team != this.follow.team) {
+    if (this.follow && this.follow.ai.category == 'player' && this.follow.ai.target && this.follow.ai.target.team != this.follow.team) {
       const myPos = this.follow.getPosition();
       const position = this.follow.ai.target.getPosition();
       const relative = Vec2(position.x - myPos.x, position.y - myPos.y);
