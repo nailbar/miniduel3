@@ -3,42 +3,43 @@ class Player {
     this.category = 'player';
     this.ship = ship;
     this.game = game;
-    this.nearestEnemy = ship;
     this.target = ship;
   }
 
   findNearerEnemy() {
-    const ship = this.game.getRandomShip();
-    if (!ship || ship.team == this.ship.team) {
-      return;
-    }
+    const nearestEnemy = this.game.ships.reduce((prev, cur) => {
+      if (cur.team == this.ship.team || cur.destroy) {
+        return prev;
+      }
+      const distance = this.ship.getDistanceTo(cur.getPosition());
+      if (!prev || distance < prev.distance) {
+        return {
+          distance,
+          target: cur
+        };
+      }
+      return prev;
+    }, false);
 
-    if (this.nearestEnemy.team == this.ship.team || this.nearestEnemy.destroy) {
-      this.nearestEnemy = ship;
-      return;
-    }
+    console.log(nearestEnemy);
 
-    const newDistance = this.ship.getDistanceTo(ship.getPosition());
-    const oldDistance = this.ship.getDistanceTo(this.nearestEnemy.getPosition());
-    if (newDistance < oldDistance) {
-      this.nearestEnemy = ship;
+    if (nearestEnemy) {
+      this.target = nearestEnemy.target;
     }
   }
 
   updateTarget() {
-    if (this.target.team == this.ship.team || this.target.destroy) {
-      this.target = this.nearestEnemy;
+    if (!this.target) {
       return;
     }
-    
-    const distance = this.ship.getDistanceTo(this.target.getPosition());
-    if (distance > 100) {
-      this.target = this.nearestEnemy;
+
+    if (this.target.team == this.ship.team || this.target.destroy) {
+      this.target = false;
+      return;
     }
   }
 
   ponder() {
-    this.findNearerEnemy();
     this.updateTarget();
 
     this.ship.initSignals();
@@ -70,7 +71,7 @@ class Player {
       this.ship.signals.shootSecondary = 1.0;
     }
     if (this.game.keys.t) {
-      this.updateTarget();
+      this.findNearerEnemy();
     }
   }
 }
