@@ -1,5 +1,5 @@
 # miniduel3
-A third attempt at making a small 2D space ship shooter game
+A ~~third~~ maybe eigth attempt at making a small 2D space ship shooter game.
 
 [Demo on Nailbar.io](https://nailbar.io/proj/miniduel3/)
 
