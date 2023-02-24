@@ -557,7 +557,7 @@ class Game {
     for (let team = 0; team < 3; team++) {
       if (teams[team]) {
         this.setColors('hull ' + team);
-        this.c.fillRect(0.5, 0.5 + 0.8 * team, teams[team] * 0.5, 0.5);
+        this.c.fillRect(0.5, 0.5 + 1.0 * team, teams[team] * 0.8, 0.8);
       }
     }
     this.c.restore();
