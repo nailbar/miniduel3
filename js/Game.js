@@ -18,6 +18,7 @@ class Game {
     
     this.paused = false;
     this.demo = true;
+    this.showHud = true;
 
     this.fixCanvasSize();
     this.createWorld();
@@ -34,7 +35,9 @@ class Game {
 
   actAndDraw(spf) {
     this.c.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.infoText();
+    if (this.showHud) {
+      this.infoText();
+    }
     this.c.save();
     this.fixCamera();
     this.drawParallax();
@@ -43,8 +46,10 @@ class Game {
     this.doDebris(spf);
     this.doParticles(spf);
     this.c.restore();
-    this.drawTargetStatus();
-    this.drawTeamStatus();
+    if (this.showHud) {
+      this.drawTargetStatus();
+      this.drawTeamStatus();
+    }
   }
 
   infoText() {
@@ -66,6 +71,7 @@ class Game {
       this.c.fillText('Shoot secondary: S or Enter', 0, 3.5 * pos++);
       this.c.fillText('Slide: X or Space', 0, 3.5 * pos++);
       this.c.fillText('Select nearest target: T', 0, 3.5 * pos++);
+      this.c.fillText('Toggle HUD: H', 0, 3.5 * pos++);
     }
     if (this.demo) {
       pos++;
@@ -231,6 +237,10 @@ class Game {
     if (e.key == 'p') {
       this.paused = !this.paused;
     }
+
+    if (e.key == 'h') {
+      this.showHud = !this.showHud;
+    }
   }
 
   getCameraPos() {
@@ -255,7 +265,14 @@ class Game {
       -position.y,
     );
 
-    // Draw "home" indicator
+    // Draw indicators
+    if (this.showHud) {
+      this.drawHomeIndicator(position);
+      this.drawTargetIndicator();
+    }
+  }
+
+  drawHomeIndicator(position) {
     this.setColors('home');
     this.c.beginPath();
     this.c.arc(0, 0, 0.5, 0, Math.PI * 2.0);
@@ -268,8 +285,6 @@ class Game {
       this.c.arc(position.x + vector.x * 10, position.y + vector.y * 10, 0.3, 0, Math.PI * 2.0);
     }
     this.c.fill();
-
-    this.drawTargetIndicator();
   }
 
   drawTargetIndicator() {

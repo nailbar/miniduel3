@@ -98,14 +98,16 @@ class Ship {
         c.beginPath();
         c.rect(this.targetingData.move.position.x - 2, this.targetingData.move.position.y - 2, 4, 4);
         c.stroke();
+      } else {
+        c.beginPath();
+        c.arc(this.targetingData.position.x, this.targetingData.position.y, 20, 0, Math.PI * 2.0);
+        c.stroke();
+      }
+      if (this.targetingData.shoot) {
         c.beginPath();
         c.arc(this.targetingData.shoot.position.x, this.targetingData.shoot.position.y, 2, 0, Math.PI * 2.0);
         c.moveTo(0, 0);
         c.lineTo(this.ai.personality.attackDistance, 0);
-        c.stroke();
-      } else {
-        c.beginPath();
-        c.arc(this.targetingData.position.x, this.targetingData.position.y, 20, 0, Math.PI * 2.0);
         c.stroke();
       }
     }
