@@ -15,7 +15,9 @@ class Game {
     this.maxShips = 12;
     this.follow = false;
     this.myTeam = Math.floor(Math.random() * 3);
+    
     this.paused = false;
+    this.demo = true;
 
     this.fixCanvasSize();
     this.createWorld();
@@ -46,18 +48,30 @@ class Game {
   }
 
   infoText() {
+    let pos = 1;
+    this.c.save();
+    this.c.font = '3px sans-serif';
+    this.c.scale(this.scale, this.scale);
+    this.c.translate(0.5, 0);
     this.setColors('text');
-    this.c.fillText('Controls:', 10, 20);
-    this.c.fillText('Forward: I or Up', 10, 30);
-    this.c.fillText('Turn left: J or Left', 10, 40);
-    this.c.fillText('Turn right: L or Right', 10, 50);
-    this.c.fillText('Reverse: K or Down', 10, 60);
-    this.c.fillText('Strafe left: A', 10, 70);
-    this.c.fillText('Strafe right: D', 10, 80);
-    this.c.fillText('Shoot primary: W or Shift', 10, 90);
-    this.c.fillText('Shoot secondary: S or Enter', 10, 100);
-    this.c.fillText('Slide: X or Space', 10, 110);
-    this.c.fillText('Select nearest target: T', 10, 120);
+    this.c.fillText('Pause / unpause: P', 0, 3.5 * pos++);
+    if (this.paused || this.demo) {
+      this.c.fillText('Forward: I or Up', 0, 3.5 * pos++);
+      this.c.fillText('Turn left: J or Left', 0, 3.5 * pos++);
+      this.c.fillText('Turn right: L or Right', 0, 3.5 * pos++);
+      this.c.fillText('Reverse: K or Down', 0, 3.5 * pos++);
+      this.c.fillText('Strafe left: A', 0, 3.5 * pos++);
+      this.c.fillText('Strafe right: D', 0, 3.5 * pos++);
+      this.c.fillText('Shoot primary: W or Shift', 0, 3.5 * pos++);
+      this.c.fillText('Shoot secondary: S or Enter', 0, 3.5 * pos++);
+      this.c.fillText('Slide: X or Space', 0, 3.5 * pos++);
+      this.c.fillText('Select nearest target: T', 0, 3.5 * pos++);
+    }
+    if (this.demo) {
+      pos++;
+      this.c.fillText('Press ship control keys to start playing', 0, 3.5 * pos++);
+    }
+    this.c.restore();
   }
 
   doShips(spf) {
@@ -189,6 +203,26 @@ class Game {
 
   keyDown(e) {
     this.keys[e.key] = true;
+
+    if (this.demo && (e.key == 'i' || e.key == 'j' || e.key == 'k' || e.key == 'l' || e.key == 'ArrowUp' || e.key == 'ArrowLeft' || e.key == 'ArrowDown' || e.key == 'ArrowRight')) {
+      this.demo = false;
+      if (!this.follow || this.follow.team != this.myTeam) {
+        this.follow = this.ships.reduce((prev, cur) => {
+          if (cur.ai.category == 'player') {
+            return cur;
+          }
+
+          if (prev && prev.ai.category == 'player') {
+            return prev;
+          }
+
+          return cur.team == this.myTeam ? cur : prev;
+        }, false);
+      }
+      if (this.follow) {
+        this.follow.makePlayerControlled();
+      }
+    }
   }
   
   keyUp(e) {
@@ -240,7 +274,7 @@ class Game {
 
   drawTargetIndicator() {
     const Vec2 = planck.Vec2;
-    if (this.follow && this.follow.ai.category == 'player' && this.follow.ai.target && this.follow.ai.target.team != this.follow.team) {
+    if (this.follow && this.follow.ai.target && this.follow.ai.target.team != this.follow.team) {
       const myPos = this.follow.getPosition();
       const position = this.follow.ai.target.getPosition();
       const relative = Vec2(position.x - myPos.x, position.y - myPos.y);
@@ -274,9 +308,10 @@ class Game {
   }
 
   addTeamShip(team) {
+    const spawnPlayer = !this.hasPlayer() && !this.demo && this.teams[this.myTeam] > 0;
 
     // Always spawn player if possible
-    if (!this.hasPlayer() && this.teams[this.myTeam] > 0) {
+    if (spawnPlayer) {
       team = this.myTeam;
     }
 
@@ -284,14 +319,17 @@ class Game {
       const position = this.getTeamStartPos(team);
       this.ships.push(new Ship(position.x, position.y, team, this));
       this.teams[team]--;
-      if (!this.hasPlayer() && this.ships[this.ships.length - 1].team == this.myTeam) {
+      
+      // Make sure all new NPC ships don't all target the same ship
+      this.ships[this.ships.length - 1].ai.targetShip = this.getRandomShip();
+
+      if (spawnPlayer) {
         this.ships[this.ships.length - 1].makePlayerControlled();
         this.follow = this.ships[this.ships.length - 1];
       }
-      
-      // Make sure all new NPC ships don't all target the same ship
-      else {
-        this.ships[this.ships.length - 1].ai.targetShip = this.getRandomShip();
+
+      if (!this.follow || this.follow.destroy) {
+        this.follow = this.ships[this.ships.length - 1];
       }
     }
   }
@@ -471,7 +509,7 @@ class Game {
   }
 
   drawTargetStatus() {
-    if (this.follow && this.follow.ai.category == 'player') {
+    if (this.follow) {
       if (this.follow.ai.target && !this.follow.ai.target.destroy) {
         this.drawShipStatus(this.follow.ai.target, 1, 1, 'enemy');
       }

@@ -4,8 +4,7 @@ class ShipAi {
     this.ship = ship;
     this.game = game;
     this.mode = 'attack';
-    this.target = { x: 0, y: 0 };
-    this.targetShip = false;
+    this.target = false;
     this.nearestTarget = false;
     this.targetId = -1;
     this.timeout = 20.0;
@@ -41,7 +40,7 @@ class ShipAi {
     }
 
     // Get target data relative to this ship
-    const data = this.getRelativeData(this.targetShip);
+    const data = this.getRelativeData(this.target);
     // this.ship.targetingData = data; // For debugging
 
     // Avoid collision if target is too near
@@ -54,7 +53,7 @@ class ShipAi {
     }
 
     // Inteception data
-    this.getInterceptData(this.targetShip, data);
+    this.getInterceptData(this.target, data);
 
     // Try to intercept target
     this.turnTowards(data.move);
@@ -141,10 +140,10 @@ class ShipAi {
 
   haveValidTarget() {
     this.findNearerTarget();
-    if (!this.targetShip || this.targetShip.team == this.ship.team || this.targetShip.destroy) {
-      this.targetShip = this.nearestTarget;
+    if (!this.target || this.target.team == this.ship.team || this.target.destroy) {
+      this.target = this.nearestTarget;
     }
-    if (!this.targetShip || this.targetShip.team == this.ship.team || this.targetShip.destroy) {
+    if (!this.target || this.target.team == this.ship.team || this.target.destroy) {
       return false; // Could not find valid target
     }
     return true;
