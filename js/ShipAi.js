@@ -17,15 +17,23 @@ class ShipAi {
       sightsMultiplier: Math.random() * 0.02,
       sightPrecision: 1.0 - Math.random() * 0.5,
       attackDistance: 40.0 + Math.random() * 80.0,
+      focusTime: 20.0 + Math.random() * 400.0,
     };
   }
 
   ponder(spf) {
     this.ship.initSignals();
-    this.attackTarget();
+    this.attackTarget(spf);
   }
 
-  attackTarget() {
+  attackTarget(spf) {
+
+    // Switch to better target after attacking one for long enough
+    this.timeout -= spf;
+    if (this.timeout < 0) {
+      this.timeout = Math.random() * this.personality.focusTime;
+      this.findNearerTarget();
+    }
 
     // Make sure we have a valid target
     if (!this.haveValidTarget()) {
