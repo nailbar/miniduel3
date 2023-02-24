@@ -17,6 +17,8 @@ class Ship {
 
     this.initSignals();
     this.ai = new ShipAi(this, game);
+
+    this.dying = 0;
   }
 
   makePlayerControlled() {
@@ -108,7 +110,8 @@ class Ship {
     let powerDraw = 0;
 
     this.canShoot = false;
-    this.canTurn = false;
+    this.canTurnLeft = false;
+    this.canTurnRight = false;
     this.canAccel = false;
 
     this.parts.forEach((part, i) => {
@@ -128,8 +131,11 @@ class Ship {
       if (part.hasAbility('shoot')) {
         this.canShoot = true;
       }
-      if (part.hasAbility('turn')) {
-        this.canTurn = true;
+      if (part.hasAbility('turn left')) {
+        this.canTurnLeft = true;
+      }
+      if (part.hasAbility('turn right')) {
+        this.canTurnRight = true;
       }
       if (part.hasAbility('accelerate')) {
         this.canAccel = true;
@@ -153,12 +159,33 @@ class Ship {
       return;
     }
 
-    if (!this.canAccel || !this.canTurn || !this.canShoot || !hasLifeSupport) {
-      const partId = Math.floor(Math.random() * this.parts.length);
-      this.parts[partId].getBulletDamage();
+    if (!this.canAccel || !this.canTurnLeft || !this.canTurnRight || !this.canShoot || !hasLifeSupport) {
+      this.dieALittle(spf);
     }
 
     this.powerDraw = powerDraw;
+  }
+
+  dieALittle(spf) {
+    this.dying -= spf;
+    if (this.dying < 0) {
+      const partId = Math.floor(Math.random() * this.parts.length);
+      this.parts[partId].getBulletDamage();
+      this.dying = Math.random() * 1.0;
+      
+      const position = this.body.getWorldPoint(this.parts[partId].getPartPos());
+      const particles = Math.floor(Math.random() * 10) + 3;
+
+      for (let i = 0; i < particles; i++) {
+        this.game.addParticle(
+          position.x,
+          position.y,
+          Math.random() * 50 - 25,
+          Math.random() * 50 - 25,
+          'spark'
+        );
+      }
+    }
   }
 
   debrisFromPart(part) {

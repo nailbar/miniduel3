@@ -22,7 +22,8 @@ class Part {
 
       switch (ability) {
         case 'shoot': return cur.signal == 'shootPrimary' || cur.signal == 'shootSecondary';
-        case 'turn': return cur.signal == 'turnLeft' || cur.signal == 'turnRight';
+        case 'turn left': return cur.signal == 'turnLeft';
+        case 'turn right': return cur.signal == 'turnRight';
         case 'accelerate': return cur.signal == 'forward';
         default: return false;
       }
@@ -54,25 +55,25 @@ class Part {
       case 'left thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(0, strength * -30.0)),
-          ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
+          ship.body.getWorldPoint(this.getPartPos())
         );
         return this.getPowerDraw();
       case 'right thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(0, strength * 30.0)),
-          ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
+          ship.body.getWorldPoint(this.getPartPos())
         );
         return this.getPowerDraw();
       case 'main thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(strength * 100.0, 0)),
-          ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
+          ship.body.getWorldPoint(this.getPartPos())
         );
         return this.getPowerDraw();
       case 'retro thruster':
         ship.body.applyForce(
           ship.body.getWorldVector(planck.Vec2(strength * -50.0, 0)),
-          ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y))
+          ship.body.getWorldPoint(this.getPartPos())
         );
         return this.getPowerDraw();
       case 'blaster':
@@ -102,7 +103,7 @@ class Part {
   }
 
   addBullet(ship) {
-    const pos = ship.body.getWorldPoint(planck.Vec2(this.pos.x, this.pos.y));
+    const pos = ship.body.getWorldPoint(this.getPartPos());
     const vec = ship.body.getWorldVector(planck.Vec2(1, 0));
     const vel = ship.body.getLinearVelocity();
     ship.game.addBullet(
@@ -398,5 +399,9 @@ class Part {
     c.closePath();
     c.fill();
     c.restore();
+  }
+
+  getPartPos() {
+    return planck.Vec2(this.pos.x, this.pos.y);
   }
 }
