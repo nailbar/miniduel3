@@ -9,7 +9,13 @@ class Ship {
     this.powerGeneration = 0;
     this.powerDraw = 0;
     
-    this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
+    this.body = this.game.physics.createBody({
+      bullet: true,
+      type: 'dynamic',
+      position: planck.Vec2(x, y),
+    });
+
+    // this.body = this.game.physics.createDynamicBody(planck.Vec2(x, y));
     this.body.setLinearDamping(0.1);
     this.body.setUserData(this);
     this.parts = [];

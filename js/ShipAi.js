@@ -6,6 +6,7 @@ class ShipAi {
     this.mode = 'attack';
     this.target = false;
     this.nearestTarget = false;
+    this.nearestTargetDistance = 0;
     this.targetId = -1;
     this.timeout = 20.0;
 
@@ -36,6 +37,12 @@ class ShipAi {
 
   regroup(spf) {
     this.findNearerTarget();
+    if (this.nearestTargetDistance < 20) {
+      this.mode = 'attack';
+      this.target = this.nearestTarget;
+      return;
+    }
+
     const data = this.getRelativeData(planck.Vec2(0, 0));
     // this.ship.targetingData = data; // For debugging
     
@@ -71,7 +78,7 @@ class ShipAi {
 
     // Make sure we have a valid target, and are inside play area
     const position = this.ship.getPosition();
-    if (!this.haveValidTarget() || Math.abs(position.x) > 200 || Math.abs(position.y) > 200) {
+    if (!this.haveValidTarget() || Math.abs(position.x) > 250 || Math.abs(position.y) > 250) {
       this.mode = 'regroup';
       return;
     }
@@ -187,7 +194,7 @@ class ShipAi {
   }
 
   getRelativeShipData(ship) {
-    return this.getRelativeData(this.ship.body.getLocalPoint(ship.getPosition()));
+    return this.getRelativeData(ship.getPosition());
   }
 
   getRelativeData(position) {
@@ -227,6 +234,10 @@ class ShipAi {
     const newDistance = this.ship.getDistanceTo(newTarget.getPosition());
     if (newDistance < oldDistance) {
       this.nearestTarget = newTarget;
+      this.nearestTargetDistance = newDistance;
+    } else {
+      this.nearestTargetDistance = oldDistance;
     }
+
   }
 }
