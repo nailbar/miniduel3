@@ -22,7 +22,42 @@ class ShipAi {
 
   ponder(spf) {
     this.ship.initSignals();
-    this.attackTarget(spf);
+    switch (this.mode) {
+      case 'regroup':
+        this.regroup(spf);
+        break;
+      case 'attack':
+        this.attackTarget(spf);
+        break;
+      default:
+        this.mode = 'regroup';
+    }
+  }
+
+  regroup(spf) {
+    this.findNearerTarget();
+    const data = this.getRelativeData(planck.Vec2(0, 0));
+    // this.ship.targetingData = data; // For debugging
+    
+    this.timeout -= spf;
+    if (data.distance < 30.0 || this.timeout < 0) {
+      this.mode = 'attack';
+      if (this.timeout < 0) {
+        this.timeout = Math.random() * this.personality.focusTime;
+      }
+      return;
+    }
+
+    const ownVelocity = this.ship.body.getLinearVelocity();
+    data.move = this.getRelativeData(planck.Vec2(
+      -ownVelocity.x * this.personality.interceptMultiplier,
+      -ownVelocity.y * this.personality.interceptMultiplier
+    ));
+
+    this.turnTowards(data.move);
+    if (data.move.vector.x > 0) {
+      this.ship.signals.forward = Math.min(1, data.move.vector.x);
+    }
   }
 
   attackTarget(spf) {
@@ -34,13 +69,15 @@ class ShipAi {
       this.findNearerTarget();
     }
 
-    // Make sure we have a valid target
-    if (!this.haveValidTarget()) {
+    // Make sure we have a valid target, and are inside play area
+    const position = this.ship.getPosition();
+    if (!this.haveValidTarget() || Math.abs(position.x) > 200 || Math.abs(position.y) > 200) {
+      this.mode = 'regroup';
       return;
     }
 
     // Get target data relative to this ship
-    const data = this.getRelativeData(this.target);
+    const data = this.getRelativeShipData(this.target);
     // this.ship.targetingData = data; // For debugging
 
     // Avoid collision if target is too near
@@ -149,11 +186,15 @@ class ShipAi {
     return true;
   }
 
-  getRelativeData(ship) {
+  getRelativeShipData(ship) {
+    return this.getRelativeData(this.ship.body.getLocalPoint(ship.getPosition()));
+  }
+
+  getRelativeData(position) {
     const Vec2 = planck.Vec2;
     const data = {};
 
-    data.position = this.ship.body.getLocalPoint(ship.getPosition());
+    data.position = this.ship.body.getLocalPoint(position);
     data.distance = Vec2.lengthOf(data.position);
     data.vector = data.distance > 0.001 ? Vec2(
       data.position.x / data.distance,
