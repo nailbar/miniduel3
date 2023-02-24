@@ -141,10 +141,10 @@ class ShipAi {
 
   haveValidTarget() {
     this.findNearerTarget();
-    if (!this.targetShip || this.targetShip.team == this.team || this.targetShip.destroy) {
+    if (!this.targetShip || this.targetShip.team == this.ship.team || this.targetShip.destroy) {
       this.targetShip = this.nearestTarget;
     }
-    if (!this.targetShip || this.targetShip.team == this.team || this.targetShip.destroy) {
+    if (!this.targetShip || this.targetShip.team == this.ship.team || this.targetShip.destroy) {
       return false; // Could not find valid target
     }
     return true;
