@@ -32,7 +32,10 @@ class Player {
     }
 
     if (this.target.team == this.ship.team || this.target.destroy) {
-      this.target = false;
+      this.findNearerEnemy();
+      if (this.target.team == this.ship.team || this.target.destroy) {
+        this.target = false;
+      }
       return;
     }
   }

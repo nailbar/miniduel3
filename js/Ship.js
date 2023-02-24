@@ -230,7 +230,7 @@ class Ship {
   }
 
   getSchematic() {
-    switch (Math.floor(Math.random() * 1)) {
+    switch (Math.floor(Math.random() * 9)) {
       case 0:
         return [
           [ 0, 0, 'hull', 0, false ],
@@ -249,6 +249,208 @@ class Ship {
           ]],
           [ -0.2, -0.6, 'right thruster', 0, [
             { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 1:
+        return [
+          [ 0, 0, 'hull', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.0, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.1, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.1, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 0.6, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -0.6, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'auto cannon', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 2:
+        return [
+          [ 0, 0, 'hull', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.1, 0.4, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ -1.1, -0.4, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.1, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.1, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 0.6, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -0.6, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 3:
+        return [
+          [ 0, 0, 'hull', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.0, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.1, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.1, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 0.6, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -0.6, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 0.8, 0.5, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+          [ 0.8, -0.5, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 4:
+        return [
+          [ 0, 0, 'hull2', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.2, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.5, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.5, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 1.0, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -1.0, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 5:
+        return [
+          [ 0, 0, 'hull2', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.2, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.5, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.5, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 1.0, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -1.0, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'auto cannon', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 6:
+        return [
+          [ 0, 0, 'hull2', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.2, 0.5, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ -1.2, -0.5, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.5, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.5, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 1.0, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -1.0, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 1.5, 0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 7:
+        return [
+          [ 0, 0, 'hull2', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.2, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.5, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.5, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 1.0, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -1.0, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 0, 1.0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+          [ 0, -1.0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+        ];
+      case 8:
+        return [
+          [ 0, 0, 'hull2', 0, false ],
+          [ -0.5, 0, 'life support', 0, false ],
+          [ -1.2, 0, 'main thruster', 0, [
+            { signal: 'forward', strength: 1 },
+          ]],
+          [ 1.2, 0.5, 'left thruster', 0, [
+            { signal: 'turnRight', strength: 1 },
+          ]],
+          [ 1.2, -0.5, 'right thruster', 0, [
+            { signal: 'turnLeft', strength: 1 },
+          ]],
+          [ -0.2, 1.0, 'left thruster', 0, [
+            { signal: 'strafeRight', strength: 1 },
+          ]],
+          [ -0.2, -1.0, 'right thruster', 0, [
+            { signal: 'strafeLeft', strength: 1 },
+          ]],
+          [ 0, 1.0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
+          ]],
+          [ 0, -1.0, 'blaster', 0, [
+            { signal: 'shootPrimary', strength: 1 },
           ]],
           [ 1.5, 0, 'blaster', 0, [
             { signal: 'shootPrimary', strength: 1 },
