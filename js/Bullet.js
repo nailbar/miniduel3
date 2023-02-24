@@ -32,6 +32,13 @@ class Bullet {
     const particles = Math.floor(Math.random() * 10) + 3;
 
     if (this.ttl > 0) {
+      this.game.addParticle(
+        position.x,
+        position.y,
+        0,
+        0,
+        'mini blast'
+      );
       for (let i = 0; i < particles; i++) {
         this.game.addParticle(
           position.x,

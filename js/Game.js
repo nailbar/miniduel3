@@ -475,6 +475,10 @@ class Game {
         this.c.fillStyle = '#f93';
         this.c.strokeStyle = '#f93';
         break;
+      case 'blast':
+        this.c.fillStyle = '#ffe';
+        this.c.strokeStyle = '#eed';
+        break;
       case 'star':
         this.c.fillStyle = '#fff';
         this.c.strokeStyle = '#fff';
