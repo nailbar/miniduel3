@@ -15,6 +15,7 @@ class Game {
     this.maxShips = 12;
     this.follow = false;
     this.myTeam = Math.floor(Math.random() * 3);
+    this.paused = false;
 
     this.fixCanvasSize();
     this.createWorld();
@@ -168,7 +169,9 @@ class Game {
     const spf = (timestamp - this.timestamp) / 1000.0;
     this.timestamp = timestamp;
 
-    return spf > 1.0 ? 0.001 : spf;
+    const modifier = this.paused ? 0.01 : 1.0;
+
+    return (spf > 1.0 ? 0.001 : spf) * modifier;
   }
 
   startGameLoop() {
@@ -190,6 +193,10 @@ class Game {
   
   keyUp(e) {
     this.keys[e.key] = false;
+
+    if (e.key == 'p') {
+      this.paused = !this.paused;
+    }
   }
 
   getCameraPos() {
