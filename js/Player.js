@@ -21,8 +21,6 @@ class Player {
       return prev;
     }, false);
 
-    console.log(nearestEnemy);
-
     if (nearestEnemy) {
       this.target = nearestEnemy.target;
     }

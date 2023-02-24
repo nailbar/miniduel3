@@ -281,6 +281,11 @@ class Game {
         this.ships[this.ships.length - 1].makePlayerControlled();
         this.follow = this.ships[this.ships.length - 1];
       }
+      
+      // Make sure all new NPC ships don't all target the same ship
+      else {
+        this.ships[this.ships.length - 1].ai.targetShip = this.getRandomShip();
+      }
     }
   }
 

@@ -83,10 +83,24 @@ class Ship {
   actAndDraw(c, spf) {
     this.ai.ponder(spf);
 
-    // Debug target leading
-    // const pos = this.body.getLocalPoint(planck.Vec2(this.ai.target.x, this.ai.target.y));
-    // c.fillRect(pos.x - 0.3, pos.y - 0.3, 0.6, 0.6);
-    // c.fillRect(0, -0.01, 100, 0.02);
+    // Debug targeting data if it's set (See ShipAI.js)
+    if (this.targetingData) {
+      this.game.setColors('text');
+      if (this.targetingData.move) {
+        c.beginPath();
+        c.rect(this.targetingData.move.position.x - 2, this.targetingData.move.position.y - 2, 4, 4);
+        c.stroke();
+        c.beginPath();
+        c.arc(this.targetingData.shoot.position.x, this.targetingData.shoot.position.y, 2, 0, Math.PI * 2.0);
+        c.moveTo(0, 0);
+        c.lineTo(this.ai.personality.attackDistance, 0);
+        c.stroke();
+      } else {
+        c.beginPath();
+        c.arc(this.targetingData.position.x, this.targetingData.position.y, 20, 0, Math.PI * 2.0);
+        c.stroke();
+      }
+    }
   
     let signals = this.autoStop();
     let rebuild = false;
