@@ -306,6 +306,28 @@ class Part {
           { x: 0.2, y: 0.15 },
           { x: -0.1, y: 0.2 },
         ];
+      case 'left shield':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
+        return [
+          { x: 1.1, y: -0.2 },
+          { x: -0.7, y: 0.5 },
+          { x: -1.2, y: 0.2 },
+          { x: -0.7, y: -0.1 },
+          { x: 1.3, y: -0.5 },
+        ];
+      case 'right shield':
+        if (setColors) {
+          this.game.setColors('greeble');
+        }
+        return [
+          { x: 1.1, y: 0.2 },
+          { x: -0.7, y: -0.5 },
+          { x: -1.2, y: -0.2 },
+          { x: -0.7, y: 0.1 },
+          { x: 1.3, y: 0.5 },
+        ];
       default:
         if (setColors) {
           this.game.setColors('default');
@@ -315,7 +337,7 @@ class Part {
           { x: -1, y: 1 },
           { x: -1, y: -1 },
           { x: 1, y: -1 },
-        ]
+        ];
     }
   }
 
@@ -327,7 +349,11 @@ class Part {
   }
 
   getMass() {
-    return 1.0;
+    switch (this.type) {
+      case 'left shield': return 2.0;
+      case 'right shield': return 2.0;
+      default: return 1.0;
+    }
   }
 
   getBulletDamage(bullet) {
@@ -347,6 +373,8 @@ class Part {
       case 'life support': return 5.0;
       case 'hull': return 10.0;
       case 'hull2': return 15.0;
+      case 'left shield': return 20.0;
+      case 'right shield': return 20.0;
       case 'main thruster': return 5.0;
       case 'retro thruster': return 4.0;
       case 'left thruster': return 3.0;
