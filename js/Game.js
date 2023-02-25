@@ -370,10 +370,14 @@ class Game {
   }
 
   populateWorld() {
+    this.demo = true;
     this.endTimer = 10.0;
-    this.teams[0] = 2;
-    this.teams[1] = 2;
-    this.teams[2] = 2;
+
+    const shipsPerTeam = 1 + Math.floor(Math.random() * 30.0);
+    this.teams[0] = shipsPerTeam;
+    this.teams[1] = shipsPerTeam;
+    this.teams[2] = shipsPerTeam;
+    
     this.addTeamShip(this.myTeam);
   }
 
