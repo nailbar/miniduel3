@@ -37,14 +37,15 @@ class ShipAi {
 
   regroup(spf) {
     this.findNearerTarget();
-    if (this.nearestTargetDistance < 20) {
+
+    const data = this.getRelativeData(planck.Vec2(0, 0));
+    // this.ship.targetingData = data; // For debugging
+
+    if (this.nearestTargetDistance < 20 && data.distance < 150) {
       this.mode = 'attack';
       this.target = this.nearestTarget;
       return;
     }
-
-    const data = this.getRelativeData(planck.Vec2(0, 0));
-    // this.ship.targetingData = data; // For debugging
     
     this.timeout -= spf;
     if (data.distance < 30.0 || this.timeout < 0) {
