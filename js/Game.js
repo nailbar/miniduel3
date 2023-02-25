@@ -13,8 +13,9 @@ class Game {
     window.onresize = this.fixCanvasSize;
 
     this.maxShips = 12;
-    this.follow = false;
     this.myTeam = Math.floor(Math.random() * 3);
+    this.follow = false;
+    this.cameraCoolDown = 3.0;
     
     this.paused = false;
     this.demo = true;
@@ -50,6 +51,63 @@ class Game {
       this.drawTargetStatus();
       this.drawTeamStatus();
     }
+    this.followShips();
+  }
+
+  followShips() {
+    const isAlive = this.follow && !this.follow.destroy;
+    const isPlayer = isAlive && this.follow.ai.category == 'player';
+    const isOnTeam = isAlive && this.follow.team == this.myTeam;
+
+    if (isPlayer) {
+      return;
+    }
+
+    let player = false;
+    let onTeam = isOnTeam ? this.follow : false;
+    let other = isAlive ? this.follow : false;
+    this.ships.forEach((ship) => {
+      if (player) {
+        return;
+      } else if (ship.ai.category == 'player') {
+        player = ship;
+        return;
+      }
+
+      if (onTeam) {
+        return;
+      } else if (ship.team == this.myTeam) {
+        onTeam = ship;
+        return;
+      }
+
+      if (other) {
+        return;
+      } else {
+        other = ship;
+      }
+    });
+
+    if (player) {
+      this.follow = player;
+      return;
+    }
+
+    if (onTeam) {
+      if (isOnTeam) {
+        return;
+      }
+      this.follow = onTeam;
+      if (!this.demo) {
+        this.follow.makePlayerControlled();
+      }
+      return;
+    }
+    
+    if (isAlive) {
+      return;
+    }
+    this.follow = other;
   }
 
   infoText() {
@@ -245,10 +303,7 @@ class Game {
 
   getCameraPos() {
     if (this.follow) {
-      if (!this.follow.destroy) {
-        return this.follow.getPosition();
-      }
-      this.follow = false;
+      return this.follow.getPosition();
     }
     return { x: 0, y: 0 };
   }
@@ -316,20 +371,13 @@ class Game {
 
   populateWorld() {
     this.endTimer = 10.0;
-    this.teams[0] = 20;
-    this.teams[1] = 20;
-    this.teams[2] = 20;
-    this.addTeamShip(Math.floor(Math.random() * 3));
+    this.teams[0] = 2;
+    this.teams[1] = 2;
+    this.teams[2] = 2;
+    this.addTeamShip(this.myTeam);
   }
 
   addTeamShip(team) {
-    const spawnPlayer = !this.hasPlayer() && !this.demo && this.teams[this.myTeam] > 0;
-
-    // Always spawn player if possible
-    if (spawnPlayer) {
-      team = this.myTeam;
-    }
-
     if (this.teams[team] > 0) {
       const position = this.getTeamStartPos(team);
       this.ships.push(new Ship(position.x, position.y, team, this));
@@ -337,15 +385,6 @@ class Game {
       
       // Make sure all new NPC ships don't all target the same ship
       this.ships[this.ships.length - 1].ai.targetShip = this.getRandomShip();
-
-      if (spawnPlayer) {
-        this.ships[this.ships.length - 1].makePlayerControlled();
-        this.follow = this.ships[this.ships.length - 1];
-      }
-
-      if (!this.follow || this.follow.destroy) {
-        this.follow = this.ships[this.ships.length - 1];
-      }
     }
   }
 
@@ -363,7 +402,16 @@ class Game {
     };
   }
 
+  clearWorld() {
+    if (this.ships) {
+      this.ships.forEach((ship) => {
+        ship.destroy = true;
+      });
+    }
+  }
+
   emptyWorld() {
+    this.clearWorld();
     this.teams = [0, 0, 0];
     this.particles = [];
     this.ships = [];
